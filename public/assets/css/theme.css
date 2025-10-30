@@ -1,0 +1,221 @@
+/* ===========================
+   theme.css — Theme-specific styles
+   =========================== */
+
+/* Dark theme overrides */
+[data-bs-theme="dark"] {
+    --bs-body-bg: #212529;
+    --bs-body-color: #f8f9fa;
+    --bs-primary: #4dabf7;
+    --bs-secondary: #868e96;
+    --bs-success: #51cf66;
+    --bs-warning: #ffd43b;
+    --bs-danger: #ff6b6b;
+    --bs-light: #2d3748;
+    --bs-dark: #f7fafc;
+}
+
+/* Light theme overrides */
+[data-bs-theme="light"] {
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #212529;
+    --bs-primary: #0d6efd;
+    --bs-secondary: #6c757d;
+    --bs-success: #198754;
+    --bs-warning: #ffc107;
+    --bs-danger: #dc3545;
+    --bs-light: #f8f9fa;
+    --bs-dark: #212529;
+}
+
+/* Theme transition effects */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.navbar {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Dark theme specific adjustments */
+[data-bs-theme="dark"] .car-card {
+    background-color: var(--bs-dark);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .car-card:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: var(--bs-dark);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--bs-light);
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+    background-color: var(--bs-dark);
+    border-color: var(--bs-primary);
+    color: var(--bs-light);
+}
+
+[data-bs-theme="dark"] .table {
+    --bs-table-bg: var(--bs-dark);
+    --bs-table-color: var(--bs-light);
+    --bs-table-border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .table th {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Light theme specific adjustments */
+[data-bs-theme="light"] .car-card {
+    background-color: var(--bs-light);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="light"] .car-card:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Theme toggle button styles */
+#themeToggle {
+    transition: all 0.3s ease;
+    border: 1px solid var(--bs-border-color);
+    font-size: 1.2em;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#themeToggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#themeToggle i {
+    transition: transform 0.3s ease;
+}
+
+#themeToggle.spin {
+    animation: spin 0.4s ease-in-out;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Custom scrollbar for dark theme */
+[data-bs-theme="dark"] ::-webkit-scrollbar {
+    width: 8px;
+}
+
+[data-bs-theme="dark"] ::-webkit-scrollbar-track {
+    background: var(--bs-dark);
+}
+
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Alert adjustments for dark theme */
+[data-bs-theme="dark"] .alert-success {
+    background-color: rgba(81, 207, 102, 0.1);
+    border-color: rgba(81, 207, 102, 0.3);
+    color: #51cf66;
+}
+
+[data-bs-theme="dark"] .alert-danger {
+    background-color: rgba(255, 107, 107, 0.1);
+    border-color: rgba(255, 107, 107, 0.3);
+    color: #ff6b6b;
+}
+
+[data-bs-theme="dark"] .alert-warning {
+    background-color: rgba(255, 212, 59, 0.1);
+    border-color: rgba(255, 212, 59, 0.3);
+    color: #ffd43b;
+}
+
+[data-bs-theme="dark"] .alert-info {
+    background-color: rgba(77, 171, 247, 0.1);
+    border-color: rgba(77, 171, 247, 0.3);
+    color: #4dabf7;
+}
+
+/* Badge adjustments for dark theme */
+[data-bs-theme="dark"] .badge {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Dropdown adjustments for dark theme */
+[data-bs-theme="dark"] .dropdown-menu {
+    background-color: var(--bs-dark);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .dropdown-item {
+    color: var(--bs-light);
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--bs-light);
+}
+
+/* Modal adjustments for dark theme */
+[data-bs-theme="dark"] .modal-content {
+    background-color: var(--bs-dark);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .modal-header {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Breadcrumb adjustments for dark theme */
+[data-bs-theme="dark"] .breadcrumb {
+    background-color: transparent;
+}
+
+[data-bs-theme="dark"] .breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Pagination adjustments for dark theme */
+[data-bs-theme="dark"] .page-link {
+    background-color: var(--bs-dark);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--bs-light);
+}
+
+[data-bs-theme="dark"] .page-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--bs-light);
+}
+
+[data-bs-theme="dark"] .page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
