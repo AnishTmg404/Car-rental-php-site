@@ -1,6 +1,7 @@
 <?php
-require_once '../config/auth.php';
-require_once '../public/url.php';
+
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/url.php';
 
 $page_title = 'Car Details';
 $current_user = get_current_user_data();
@@ -73,25 +74,67 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
         <div class="row g-4">
             <!-- Car Gallery -->
             <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="car-gallery">
-                            <div class="gallery-main">
-                                <img src="<?= htmlspecialchars($car_images[0] ?? 'https://via.placeholder.com/800x500') ?>" 
-                                     alt="<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>"
-                                     class="car-main-image" id="mainImage">
+                <div class="card shadow-sm">
+                    <div id="carImageCarousel" class="carousel slide" data-bs-ride="carousel">
+
+                        <?php if (count($car_images) > 1): ?>
+                            <div class="carousel-indicators">
+                                <?php foreach ($car_images as $i => $img): ?>
+                                    <button
+                                        type="button"
+                                        data-bs-target="#carImageCarousel"
+                                        data-bs-slide-to="<?= $i ?>"
+                                        class="<?= $i === 0 ? 'active' : '' ?>"
+                                        aria-current="<?= $i === 0 ? 'true' : 'false' ?>">
+                                    </button>
+                                <?php endforeach; ?>
                             </div>
-                            <?php if (count($car_images) > 1): ?>
-                                <div class="gallery-thumbs">
-                                    <?php foreach ($car_images as $index => $image): ?>
-                                        <img src="<?= htmlspecialchars($image) ?>" 
-                                             alt="Car image <?= $index + 1 ?>"
-                                             class="car-thumbnail <?= $index === 0 ? 'active' : '' ?>"
-                                             onclick="changeMainImage('<?= htmlspecialchars($image) ?>', this)">
-                                    <?php endforeach; ?>
+                        <?php endif; ?>
+
+                        <div class="carousel-inner">
+                            <?php if (!empty($car_images)): ?>
+                                <?php foreach ($car_images as $index => $image): ?>
+                                    <?php
+                                        $img_src = filter_var($image, FILTER_VALIDATE_URL)
+                                            ? $image
+                                            : base_url($image);
+                                    ?>
+                                    <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+                                        <img
+                                            src="<?= htmlspecialchars($img_src) ?>"
+                                            class="d-block w-100"
+                                            style="height: 480px; object-fit: cover;"
+                                            alt="Car image <?= $index + 1 ?>">
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="carousel-item active">
+                                    <img
+                                        src="https://via.placeholder.com/800x500"
+                                        class="d-block w-100"
+                                        alt="No image available">
                                 </div>
                             <?php endif; ?>
                         </div>
+
+                        <?php if (count($car_images) > 1): ?>
+                            <button
+                                class="carousel-control-prev"
+                                type="button"
+                                data-bs-target="#carImageCarousel"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+
+                            <button
+                                class="carousel-control-next"
+                                type="button"
+                                data-bs-target="#carImageCarousel"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        <?php endif; ?>
+
                     </div>
                 </div>
 
@@ -215,7 +258,7 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                     </div>
                     <div class="card-body">
                         <div class="text-center mb-4">
-                            <h3 class="text-primary mb-1">$<?= number_format($car['daily_rate'], 2) ?></h3>
+                            <h3 class="text-primary mb-1">Rs.<?= number_format($car['daily_rate'], 2) ?></h3>
                             <small class="text-muted">per day</small>
                         </div>
 
@@ -278,7 +321,7 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                             <i class="bi bi-telephone text-primary me-3"></i>
                             <div>
                                 <div class="fw-semibold">Call Us</div>
-                                <small class="text-muted">+1 (555) 123-4567</small>
+                                <small class="text-muted">+977 98XXXXXXXX</small>
                             </div>
                         </div>
                         <div class="d-flex align-items-center mb-3">
@@ -333,7 +376,7 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                                         <div class="mt-auto">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="car-price">
-                                                    <span class="h6 text-primary mb-0">$<?= number_format($similar_car['daily_rate'], 2) ?></span>
+                                                    <span class="h6 text-primary mb-0">Rs.<?= number_format($similar_car['daily_rate'], 2) ?></span>
                                                     <small class="text-muted">/day</small>
                                                 </div>
                                                 <a href="<?= base_url('car-details.php?id=' . $similar_car['id']) ?>" class="btn btn-outline-primary btn-sm">View</a>
@@ -352,9 +395,8 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
 
 <?php include '../public/footer.php'; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= asset_url('js/main.js') ?>"></script>
-<script src="<?= asset_url('js/theme-toggle.js') ?>"></script>
+
 
 <script>
 function changeMainImage(imageSrc, thumbnail) {

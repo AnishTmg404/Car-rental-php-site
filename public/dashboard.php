@@ -1,6 +1,6 @@
 <?php
-require_once '../config/auth.php';
-require_once '../public/url.php';
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/url.php';
 
 // Require user login
 require_login();
@@ -134,7 +134,7 @@ $favorite_cars = db_fetch_all("
                             </div>
                             <div class="flex-grow-1 ms-3">
                                 <h6 class="card-title text-white-50 mb-1">Total Spent</h6>
-                                <h3 class="card-text text-white mb-0">$<?= number_format($total_spent, 2) ?></h3>
+                                <h3 class="card-text text-white mb-0">Rs.<?= number_format($total_spent, 2) ?></h3>
                             </div>
                         </div>
                     </div>
@@ -148,7 +148,7 @@ $favorite_cars = db_fetch_all("
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Recent Bookings</h5>
-                        <a href="<?= base_url('my-bookings.php') ?>" class="btn btn-sm btn-outline-primary">View All</a>
+                        <a href="<?= base_url('my-booking.php') ?>" class="btn btn-sm btn-outline-primary">View All</a>
                     </div>
                     <div class="card-body p-0">
                         <?php if (empty($recent_bookings)): ?>
@@ -193,7 +193,7 @@ $favorite_cars = db_fetch_all("
                                                         <div class="small text-muted">to <?= format_date($booking['return_date']) ?></div>
                                                     </div>
                                                 </td>
-                                                <td class="fw-semibold">$<?= number_format($booking['total_amount'], 2) ?></td>
+                                                <td class="fw-semibold">Rs.<?= number_format($booking['total_amount'], 2) ?></td>
                                                 <td>
                                                     <?php
                                                     $status_class = match($booking['status']) {
@@ -242,7 +242,7 @@ $favorite_cars = db_fetch_all("
                             <a href="<?= base_url('cars.php') ?>" class="btn btn-primary">
                                 <i class="bi bi-car-front me-2"></i>Browse Cars
                             </a>
-                            <a href="<?= base_url('my-bookings.php') ?>" class="btn btn-outline-primary">
+                            <a href="<?= base_url('my-booking.php') ?>" class="btn btn-outline-primary">
                                 <i class="bi bi-calendar-check me-2"></i>My Bookings
                             </a>
                             <a href="<?= base_url('profile.php') ?>" class="btn btn-outline-secondary">
@@ -310,9 +310,9 @@ $favorite_cars = db_fetch_all("
 
 <?php include '../public/footer.php'; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= asset_url('js/main.js') ?>"></script>
-<script src="<?= asset_url('js/theme-toggle.js') ?>"></script>
+<script src="<?= asset_url('js/theme-toggle.js') ?>"></script> -->
 
 </body>
 </html>

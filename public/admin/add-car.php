@@ -1,6 +1,6 @@
 <?php
-require_once '../../config/auth.php';
-require_once '../../public/url.php';
+require_once __DIR__ . '/../../config/auth.php';
+require_once __DIR__ . '/../url.php';
 
 // Require admin access
 require_admin();
@@ -95,7 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'description' => $description,
                 'features' => json_encode($features),
                 'images' => json_encode($uploaded_images),
-                'status' => 'available'
+                'status' => 'available',
+                'created_at' => date('Y-m-d H:i:s')
             ];
             
             $car_id = db_insert('cars', $car_data);
@@ -273,7 +274,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="col-md-6">
                                     <label for="daily_rate" class="form-label">Daily Rate *</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">Rs.</span>
                                         <input type="number" class="form-control" id="daily_rate" name="daily_rate" 
                                                value="<?= htmlspecialchars($daily_rate ?? '') ?>" 
                                                step="0.01" min="0" required>
@@ -386,8 +387,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </main>
 
-<?php include '../../public/footer.php'; ?>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Image preview functionality
 document.getElementById('images').addEventListener('change', function(e) {

@@ -1,6 +1,6 @@
 <?php
-require_once '../config/auth.php';
-require_once '../public/url.php';
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/url.php';
 
 // Require user login
 require_login();
@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <p class="text-muted"><?= htmlspecialchars($car['year']) ?> • <?= htmlspecialchars($car['fuel_type']) ?> • <?= htmlspecialchars($car['transmission']) ?></p>
                                 
                                 <div class="mb-3">
-                                    <h5 class="text-primary mb-0">$<?= number_format($car['daily_rate'], 2) ?></h5>
+                                    <h5 class="text-primary mb-0">Rs.<?= number_format($car['daily_rate'], 2) ?></h5>
                                     <small class="text-muted">per day</small>
                                 </div>
                                 
@@ -256,19 +256,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <h6 class="mb-3">Booking Summary</h6>
                                 <div class="price-item">
                                     <span>Daily Rate:</span>
-                                    <span>$<?= number_format($car['daily_rate'], 2) ?></span>
+                                    <span>Rs.<?= number_format($car['daily_rate'], 2) ?></span>
                                 </div>
                                 <div class="price-item">
                                     <span>Duration:</span>
                                     <span id="duration">Select dates</span>
-                                </div>
-                                <div class="price-item">
-                                    <span>Subtotal:</span>
-                                    <span id="subtotal">$0.00</span>
-                                </div>
-                                <div class="price-item">
-                                    <span>Tax (10%):</span>
-                                    <span id="tax">$0.00</span>
                                 </div>
                                 <div class="price-total">
                                     <span>Total:</span>
@@ -294,80 +286,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php include '../public/footer.php'; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= asset_url('js/main.js') ?>"></script>
-<script src="<?= asset_url('js/theme-toggle.js') ?>"></script>
+<script src="<?= asset_url('js/theme-toggle.js') ?>"></script> -->
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
     const pickupDateInput = document.getElementById('pickup_date');
     const returnDateInput = document.getElementById('return_date');
+
     const durationSpan = document.getElementById('duration');
-    const subtotalSpan = document.getElementById('subtotal');
-    const taxSpan = document.getElementById('tax');
     const totalSpan = document.getElementById('total');
-    
+
     const dailyRate = <?= $car['daily_rate'] ?>;
-    
-    // Set minimum date to today
+
+    // Force pickup date minimum = today
     const today = new Date().toISOString().split('T')[0];
     pickupDateInput.min = today;
     returnDateInput.min = today;
-    
+
+    // Main calculate function
     function calculateBooking() {
-        const pickupDate = pickupDateInput.value;
-        const returnDate = returnDateInput.value;
-        
-        if (pickupDate && returnDate) {
-            const pickup = new Date(pickupDate);
-            const returnDateObj = new Date(returnDate);
-            
-            if (returnDateObj > pickup) {
-                const diffTime = Math.abs(returnDateObj - pickup);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                durationSpan.textContent = diffDays + ' day' + (diffDays > 1 ? 's' : '');
-                
-                const subtotal = diffDays * dailyRate;
-                const tax = subtotal * 0.1;
-                const total = subtotal + tax;
-                
-                subtotalSpan.textContent = '$' + subtotal.toFixed(2);
-                taxSpan.textContent = '$' + tax.toFixed(2);
-                totalSpan.textContent = '$' + total.toFixed(2);
-            } else {
-                durationSpan.textContent = 'Invalid dates';
-                subtotalSpan.textContent = '$0.00';
-                taxSpan.textContent = '$0.00';
-                totalSpan.textContent = '$0.00';
-            }
-        } else {
+        const pickupVal = pickupDateInput.value;
+        const returnVal = returnDateInput.value;
+
+        if (!pickupVal || !returnVal) {
             durationSpan.textContent = 'Select dates';
-            subtotalSpan.textContent = '$0.00';
-            taxSpan.textContent = '$0.00';
             totalSpan.textContent = '$0.00';
+            return;
         }
+
+        const pickupDate = new Date(pickupVal);
+        const returnDate = new Date(returnVal);
+
+        // Invalid case
+        if (returnDate <= pickupDate) {
+            durationSpan.textContent = 'Invalid dates';
+            totalSpan.textContent = '$0.00';
+            return;
+        }
+
+        // Calculate days
+        const diffDays = Math.ceil((returnDate - pickupDate) / (1000 * 60 * 60 * 24));
+        durationSpan.textContent = diffDays + ' day' + (diffDays > 1 ? 's' : '');
+
+        // Calculate total (no tax, no subtotal)
+        const total = diffDays * dailyRate;
+        totalSpan.textContent = '$' + total.toFixed(2);
     }
-    
+
     pickupDateInput.addEventListener('change', function() {
-        const pickupDate = new Date(this.value);
-        pickupDate.setDate(pickupDate.getDate() + 1);
-        returnDateInput.min = pickupDate.toISOString().split('T')[0];
+        // Return date must be at least 1 day after pickup
+        returnDateInput.min = this.value;
         calculateBooking();
     });
-    
+
     returnDateInput.addEventListener('change', calculateBooking);
-    
-    // Auto-dismiss alerts
+
+    // Auto dismiss alerts
     setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
+        document.querySelectorAll('.alert').forEach(alert => {
+            new bootstrap.Alert(alert).close();
         });
     }, 5000);
+
 });
 </script>
+
+
+
 
 </body>
 </html>

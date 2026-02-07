@@ -1,12 +1,37 @@
 <?php
-require_once '../../config/auth.php';
-require_once '../../public/url.php';
+require_once __DIR__ . '/../../config/auth.php';
+require_once __DIR__ . '/../url.php';
 
 // Require admin access
 require_admin();
 
 $page_title = 'Manage Cars';
 $current_user = get_current_user_data();
+
+function car_image_url($image)
+{
+    if (empty($image)) {
+        return 'https://via.placeholder.com/80x60';
+    }
+
+    // If already a full URL (Unsplash etc.)
+    if (preg_match('/^https?:\/\//i', $image)) {
+        return $image;
+    }
+
+    // Normalize slashes
+    $image = ltrim($image, '/');
+
+    // If path already contains uploads
+    if (str_contains($image, 'uploads/')) {
+        return base_url($image);
+    }
+
+    // Default uploaded car image location
+    return base_url('assets/uploads/cars/' . $image);
+}
+
+
 
 // Handle car actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -30,19 +55,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 set_flash_message('error', 'Failed to delete car.');
             }
         }
-    } elseif ($action === 'toggle_status' && $car_id) {
-        $car = db_fetch("SELECT * FROM cars WHERE id = ?", [$car_id]);
-        if ($car) {
-            $new_status = $car['status'] === 'available' ? 'unavailable' : 'available';
-            $updated = db_update('cars', ['status' => $new_status], 'id = ?', [$car_id]);
-            if ($updated) {
-                log_admin_action('update_car_status', 'cars', $car_id, ['status' => $car['status']], ['status' => $new_status]);
-                set_flash_message('success', 'Car status updated successfully.');
-            } else {
-                set_flash_message('error', 'Failed to update car status.');
-            }
+    }elseif ($action === 'toggle_status' && $car_id) {
+    $car = db_fetch("SELECT * FROM cars WHERE id = ?", [$car_id]);
+    if ($car) {
+        $new_status = $car['status'] === 'available' ? 'unavailable' : 'available';
+        // Always run the update
+        $updated = db_query("UPDATE cars SET status = ? WHERE id = ?", [$new_status, $car_id]);
+        if ($updated !== false) { // db_query returns true even if 0 rows affected
+            log_admin_action('update_car_status', 'cars', $car_id, ['status' => $car['status']], ['status' => $new_status]);
+            set_flash_message('success', 'Car status updated successfully.');
+        } else {
+            set_flash_message('error', 'Failed to update car status.');
         }
     }
+}
+
+
     
     header('Location: ' . base_url('admin/manage-cars.php'));
     exit;
@@ -113,9 +141,6 @@ $statuses = db_fetch_all("SELECT DISTINCT status FROM cars ORDER BY status");
                         <p class="text-muted mb-0">Add, edit, and manage your car fleet</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="<?= base_url('admin/add-car.php') ?>" class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-2"></i>Add New Car
-                        </a>
                         <a href="<?= base_url('admin/dashboard.php') ?>" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
                         </a>
@@ -213,9 +238,10 @@ $statuses = db_fetch_all("SELECT DISTINCT status FROM cars ORDER BY status");
                                 <tr>
                                     <td>
                                         <div class="car-thumbnail">
-                                            <img src="<?= htmlspecialchars($images[0] ?? 'https://via.placeholder.com/80x60') ?>" 
-                                                 alt="<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>"
-                                                 class="img-thumbnail" style="width: 80px; height: 60px; object-fit: cover;">
+                                            <img src="<?= htmlspecialchars(car_image_url($images[0] ?? null)) ?>" 
+                                                alt="<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>"
+                                                class="img-thumbnail"
+                                                style="width: 80px; height: 60px; object-fit: cover;">
                                         </div>
                                     </td>
                                     <td>
@@ -233,7 +259,7 @@ $statuses = db_fetch_all("SELECT DISTINCT status FROM cars ORDER BY status");
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="fw-semibold text-primary">$<?= number_format($car['daily_rate'], 2) ?></div>
+                                        <div class="fw-semibold text-primary">Rs.<?= number_format($car['daily_rate'], 2) ?></div>
                                         <small class="text-muted">per day</small>
                                     </td>
                                     <td>
@@ -338,11 +364,7 @@ $statuses = db_fetch_all("SELECT DISTINCT status FROM cars ORDER BY status");
     <input type="hidden" name="car_id" id="statusCarId">
 </form>
 
-<?php include '../../public/footer.php'; ?>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= asset_url('js/main.js') ?>"></script>
-<script src="<?= asset_url('js/theme-toggle.js') ?>"></script>
 
 <script>
 function deleteCar(carId, carName) {

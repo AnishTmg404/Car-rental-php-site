@@ -335,6 +335,23 @@ a:hover { color: darken(var(--primary-color), 5%); text-decoration: none; }
     gap: 0.5rem;
 }
 
+
+#backToTop {
+    display: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+#backToTop.show {
+    display: block;
+    opacity: 1;
+}
+
+.disabled {
+    color: #aaa;
+    pointer-events: none;
+}
+
 /* ===========================
    Small device adjustments
    =========================== */

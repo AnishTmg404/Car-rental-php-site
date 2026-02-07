@@ -15,7 +15,7 @@ require_once '../config/auth.php';
 </head>
 <body>
 
-<?php include 'navbar.php'; ?>
+<?php include 'navbar.php' ?>
 
 <main>
     <!-- Flash Messages -->
@@ -61,11 +61,11 @@ require_once '../config/auth.php';
                                         </div>
                                         <div class="col-md-3">
                                             <label class="form-label fw-medium">Pick-up Date</label>
-                                            <input type="date" class="form-control" name="pickup_date" required>
+                                            <input type="date" class="form-control" name="pickup_date" id="pickupDate" required>
                                         </div>
                                         <div class="col-md-3">
                                             <label class="form-label fw-medium">Return Date</label>
-                                            <input type="date" class="form-control" name="return_date" required>
+                                            <input type="date" class="form-control" name="return_date" id="returnDate" required>
                                         </div>
                                         <div class="col-md-3 d-flex align-items-end">
                                             <button type="submit" class="btn btn-primary w-100">
@@ -80,7 +80,9 @@ require_once '../config/auth.php';
 
                     <!-- Hero Car Image -->
                     <div class="position-relative">
-                        <img src="https://images.unsplash.com/photo-1676288176820-a5a954d81e6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+                        <!-- <img src="https://images.unsplash.com/photo-1676288176820-a5a954d81e6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+                             alt="Luxury Car" class="img-fluid hero-car-img"> -->
+                        <img src="assets/images/homecar.png"
                              alt="Luxury Car" class="img-fluid hero-car-img">
                         <div class="car-shadow"></div>
                     </div>
@@ -168,7 +170,7 @@ require_once '../config/auth.php';
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="car-price">
-                                        <span class="h5 text-primary mb-0">$<?= number_format($car['daily_rate'], 2) ?></span>
+                                        <span class="h5 text-primary mb-0">Rs.<?= number_format($car['daily_rate'], 2) ?></span>
                                         <small class="text-muted">/day</small>
                                     </div>
                                     <div class="car-actions">
@@ -211,40 +213,7 @@ require_once '../config/auth.php';
 
 <?php include 'footer.php'; ?>
 
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= asset_url('js/main.js') ?>"></script>
-<script src="<?= asset_url('js/theme-toggle.js') ?>"></script> -->
-
-<script>
-// Set minimum date to today
-document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date().toISOString().split('T')[0];
-    const pickupDateInput = document.querySelector('input[name="pickup_date"]');
-    const returnDateInput = document.querySelector('input[name="return_date"]');
-    
-    if (pickupDateInput) {
-        pickupDateInput.min = today;
-        pickupDateInput.addEventListener('change', function() {
-            const pickupDate = new Date(this.value);
-            pickupDate.setDate(pickupDate.getDate() + 1);
-            returnDateInput.min = pickupDate.toISOString().split('T')[0];
-        });
-    }
-    
-    if (returnDateInput) {
-        returnDateInput.min = today;
-    }
-    
-    // Auto-dismiss alerts
-    setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        });
-    }, 5000);
-});
-</script>
+<script src="<?= asset_url('js/main.js') ?>" defer></script>
 
 </body>
 </html>

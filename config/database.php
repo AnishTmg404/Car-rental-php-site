@@ -47,6 +47,8 @@ function db_fetch_all($sql, $params = []) {
 }
 
 function db_insert($table, $data) {
+    global $pdo;
+
     $columns = implode(',', array_keys($data));
     $placeholders = ':' . implode(', :', array_keys($data));
     $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
@@ -55,21 +57,30 @@ function db_insert($table, $data) {
     return $stmt ? $pdo->lastInsertId() : false;
 }
 
-function db_update($table, $data, $where, $whereParams = []) {
-    $setClause = [];
-    foreach ($data as $key => $value) {
-        $setClause[] = "{$key} = :{$key}";
-    }
-    $setClause = implode(', ', $setClause);
-    
-    $sql = "UPDATE {$table} SET {$setClause} WHERE {$where}";
-    $params = array_merge($data, $whereParams);
-    
+function db_update($table, $data, $where) {
+    global $pdo;
+
+    // Build SET clause
+    $set = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
+
+    // Build WHERE clause
+    $whereClause = implode(' AND ', array_map(fn($k) => "$k = :where_$k", array_keys($where)));
+
+    // Merge parameters
+    $params = [];
+    foreach ($data as $k => $v) $params[":$k"] = $v;
+    foreach ($where as $k => $v) $params[":where_$k"] = $v;
+
+    $sql = "UPDATE $table SET $set WHERE $whereClause";
     $stmt = db_query($sql, $params);
+
     return $stmt ? $stmt->rowCount() : false;
 }
 
+
 function db_delete($table, $where, $params = []) {
+    global $pdo;
+
     $sql = "DELETE FROM {$table} WHERE {$where}";
     $stmt = db_query($sql, $params);
     return $stmt ? $stmt->rowCount() : false;

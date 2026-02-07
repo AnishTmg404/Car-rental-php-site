@@ -1,6 +1,8 @@
 <?php
-require_once '../config/auth.php';
-require_once '../public/url.php';
+
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/url.php';
+
 
 $page_title = 'Our Car Fleet';
 $current_user = get_current_user_data();
@@ -71,6 +73,7 @@ $transmissions = db_fetch_all("SELECT DISTINCT transmission FROM cars WHERE stat
 // Get price range
 $price_range = db_fetch("SELECT MIN(daily_rate) as min_price, MAX(daily_rate) as max_price FROM cars WHERE status = 'available'");
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -244,7 +247,7 @@ $price_range = db_fetch("SELECT MIN(daily_rate) as min_price, MAX(daily_rate) as
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="car-price">
-                                        <span class="h5 text-primary mb-0">$<?= number_format($car['daily_rate'], 2) ?></span>
+                                        <span class="h5 text-primary mb-0">Rs.<?= number_format($car['daily_rate'], 2) ?></span>
                                         <small class="text-muted">/day</small>
                                     </div>
                                     <div class="car-actions">
@@ -301,10 +304,6 @@ $price_range = db_fetch("SELECT MIN(daily_rate) as min_price, MAX(daily_rate) as
 </main>
 
 <?php include '../public/footer.php'; ?>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= asset_url('js/main.js') ?>"></script>
-<script src="<?= asset_url('js/theme-toggle.js') ?>"></script>
 
 <script>
 // Set minimum date to today

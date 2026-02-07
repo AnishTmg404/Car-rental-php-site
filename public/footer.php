@@ -44,7 +44,7 @@ require_once __DIR__ . '/url.php';
                     <h6 class="fw-semibold mb-3">Contact Info</h6>
                     <div class="mb-3">
                         <i class="bi bi-telephone text-primary me-2"></i>
-                        <span>+1 (555) 123-4567</span>
+                        <span>+977 1234567890 </span>
                     </div>
                     <div class="mb-3">
                         <i class="bi bi-envelope text-primary me-2"></i>
@@ -52,7 +52,7 @@ require_once __DIR__ . '/url.php';
                     </div>
                     <div class="mb-3">
                         <i class="bi bi-geo-alt text-primary me-2"></i>
-                        <span>123 Main St, City, State 12345</span>
+                        <span>Taulung,Budhanilkantha-1,Kathmandu</span>
                     </div>
                     <div class="mb-3">
                         <i class="bi bi-clock text-primary me-2"></i>
@@ -84,30 +84,6 @@ require_once __DIR__ . '/url.php';
      <!-- JS: Bootstrap bundle (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Local JS -->
-    <!-- <script src="<?= asset_url('js/theme-toggle.js') ?>" defer></script>
-    <script src="<?= asset_url('js/main.js') ?>" defer></script> -->
-
-    <script>    
-        // Back to top button
-        window.addEventListener('scroll', function() {
-            const backToTop = document.getElementById('backToTop');
-            backToTop.style.display = window.pageYOffset > 300 ? 'block' : 'none';
-        });
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', e => {
-                e.preventDefault();
-                const target = document.querySelector(anchor.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        });
-    </script>
 
 </body>
 </html>
