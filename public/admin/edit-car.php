@@ -38,20 +38,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $transmission = $_POST['transmission'] ?? '';
     $category = $_POST['category'] ?? '';
     $status = $_POST['status'] ?? 'available';
-    $features = $_POST['features'] ?? [];
+    $description = $_POST['description'] ?? '';
+
+    // Features (comma separated → array)
+    $features = array_filter(array_map('trim', explode(',', $_POST['features'] ?? '')));
+
     $remove_images = $_POST['remove_images'] ?? [];
 
-    // Remove selected existing images
+    // Remove selected images
     foreach ($remove_images as $img) {
         if (($key = array_search($img, $existing_images)) !== false) {
-            $file_path = __DIR__ . '/../assets/uploads/cars' . $img; // Correct path
+            $file_path = __DIR__ . '/../' . $img;
             if (file_exists($file_path)) unlink($file_path);
             unset($existing_images[$key]);
         }
     }
     $existing_images = array_values($existing_images);
 
-    // Handle uploaded files
+    // Upload new images
     if (!empty($_FILES['images']['name'][0])) {
         $upload_dir = __DIR__ . '/../assets/uploads/cars/';
         if (!file_exists($upload_dir)) mkdir($upload_dir, 0755, true);
@@ -59,7 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($_FILES['images']['name'] as $idx => $filename) {
             $tmp_name = $_FILES['images']['tmp_name'][$idx];
             $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-            if (!in_array($ext, ['jpg','jpeg','png','gif'])) continue; // skip invalid types
+            if (!in_array($ext, ['jpg','jpeg','png','gif'])) continue;
+
             $new_name = uniqid('car_') . '.' . $ext;
             if (move_uploaded_file($tmp_name, $upload_dir . $new_name)) {
                 $existing_images[] = 'assets/uploads/cars/' . $new_name;
@@ -79,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'fuel_type' => $fuel_type,
         'transmission' => $transmission,
         'category' => $category,
+        'description' => $description,
         'status' => $status,
         'features' => json_encode($features),
         'images' => json_encode($existing_images),
@@ -103,9 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
 <style>
-    .img-thumb-wrapper { position: relative; width: 120px; }
-    .img-thumb-wrapper img { width: 100%; height: auto; border-radius: 5px; }
-    .img-thumb-wrapper .form-check { position: absolute; top: 0; right: 0; }
+.img-thumb-wrapper { position: relative; width: 120px; }
+.img-thumb-wrapper img { width: 100%; height: 90px; object-fit: cover; border-radius: 6px; }
+.img-thumb-wrapper .form-check { position: absolute; top: 4px; right: 4px; }
 </style>
 </head>
 <body>
@@ -126,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
 
-        <!-- Car Details -->
+        <!-- Basic Info -->
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label">Make</label>
@@ -176,11 +182,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
+        <!-- Category / Status / Features -->
         <div class="row mb-3">
             <div class="col-md-4">
-                <label class="form-label">Category</label>
-                <input type="text" class="form-control" name="category" value="<?= htmlspecialchars($car['category']) ?>">
+                <label class="form-label">Category *</label>
+                <select class="form-select" name="category" required>
+                    <option value="">Select category</option>
+                    <?php
+                    $cats = ['economy','compact','mid-size','full-size','luxury','suv','sports'];
+                    foreach ($cats as $c):
+                    ?>
+                        <option value="<?= $c ?>" <?= $car['category'] === $c ? 'selected' : '' ?>>
+                            <?= ucfirst($c) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
+
             <div class="col-md-4">
                 <label class="form-label">Status</label>
                 <select class="form-select" name="status">
@@ -190,63 +208,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="rented" <?= $car['status'] === 'rented' ? 'selected' : '' ?>>Rented</option>
                 </select>
             </div>
+
             <div class="col-md-4">
-                <label class="form-label">Features (comma separated)</label>
-                <input type="text" class="form-control" name="features[]" value="<?= htmlspecialchars(implode(',', json_decode($car['features'], true) ?? [])) ?>">
+                <label class="form-label">Features</label>
+                <input type="text" class="form-control" name="features"
+                       placeholder="GPS, Bluetooth, Sunroof"
+                       value="<?= htmlspecialchars(implode(',', json_decode($car['features'], true) ?? [])) ?>">
             </div>
         </div>
+
+        <!-- Description -->
+        <div class="mb-4">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="4"><?= htmlspecialchars($car['description'] ?? '') ?></textarea>
+        </div>
+
+        <hr>
 
         <!-- Existing Images -->
         <div class="mb-3">
             <label class="form-label">Existing Images</label>
-            <div class="d-flex flex-wrap gap-2" id="existing-images">
+            <div class="d-flex flex-wrap gap-2">
                 <?php foreach ($existing_images as $img): ?>
                     <div class="img-thumb-wrapper">
-                        <?php
-                        // If the image is an external URL, use it directly; otherwise, prepend base_url
-                        $img_src = preg_match('/^https?:\/\//', $img) ? $img : base_url($img);
-                        ?>
-                        <img src="<?= htmlspecialchars($img_src) ?>" class="img-thumbnail" style="width:120px;height:90px;object-fit:cover;">
+                        <img src="<?= htmlspecialchars(base_url($img)) ?>" class="img-thumbnail">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remove_images[]" value="<?= htmlspecialchars($img) ?>" title="Remove">
+                            <input class="form-check-input" type="checkbox" name="remove_images[]" value="<?= htmlspecialchars($img) ?>">
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
         </div>
 
-        <!-- Upload New Images -->
-        <div class="mb-3">
+        <!-- Upload -->
+        <div class="mb-4">
             <label class="form-label">Upload New Images</label>
-            <input type="file" class="form-control" name="images[]" multiple accept="image/*" id="new-images-input">
-            <small class="text-muted">You can upload multiple images. Allowed: jpg, jpeg, png, gif</small>
-            <div class="mt-2 d-flex flex-wrap gap-2" id="new-images-preview"></div>
+            <input type="file" class="form-control" name="images[]" multiple accept="image/*">
         </div>
 
-        <button type="submit" class="btn btn-primary">Update Car</button>
-        <a href="<?= base_url('admin/manage-cars.php') ?>" class="btn btn-secondary">Back to Manage Cars</a>
+        <button class="btn btn-primary">Update Car</button>
+        <a href="<?= base_url('admin/manage-cars.php') ?>" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-// Preview new images
-document.getElementById('new-images-input').addEventListener('change', function(event){
-    const previewContainer = document.getElementById('new-images-preview');
-    previewContainer.innerHTML = '';
-    Array.from(event.target.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const div = document.createElement('div');
-            div.style.width = '120px';
-            div.innerHTML = `<img src="${e.target.result}" class="img-thumbnail">`;
-            previewContainer.appendChild(div);
-        }
-        reader.readAsDataURL(file);
-    });
-});
-</script>
-
 </body>
 </html>

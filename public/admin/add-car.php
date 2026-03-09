@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $year = intval($_POST['year'] ?? 0);
     $color = sanitize_input($_POST['color'] ?? '');
     $license_plate = sanitize_input($_POST['license_plate'] ?? '');
-    $vin = sanitize_input($_POST['vin'] ?? '');
+    $vin = sanitize_input($_POST['vin'] ?? null);
     $mileage = intval($_POST['mileage'] ?? 0);
     $fuel_type = $_POST['fuel_type'] ?? '';
     $transmission = $_POST['transmission'] ?? '';
@@ -84,23 +84,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'year' => $year,
                 'color' => $color,
                 'license_plate' => $license_plate,
-                'vin' => $vin,
-                'mileage' => $mileage,
-                'fuel_type' => $fuel_type,
-                'transmission' => $transmission,
-                'seats' => $seats,
-                'doors' => $doors,
-                'category' => $category,
-                'daily_rate' => $daily_rate,
-                'description' => $description,
+                 'vin' => $vin,
+                 'mileage' => $mileage,
+                 'fuel_type' => $fuel_type,
+                 'transmission' => $transmission,
+                 'seats' => $seats,
+                 'doors' => $doors,
+                 'category' => $category,
+                 'daily_rate' => $daily_rate,
+                 'description' => $description,
                 'features' => json_encode($features),
                 'images' => json_encode($uploaded_images),
                 'status' => 'available',
                 'created_at' => date('Y-m-d H:i:s')
             ];
-            
+             
             $car_id = db_insert('cars', $car_data);
-            
+          
             if ($car_id) {
                 log_admin_action('add_car', 'cars', $car_id, null, $car_data);
                 set_flash_message('success', 'Car added successfully!');
@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <h6 class="text-primary mb-3">Basic Information</h6>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="make" class="form-label">Make *</label>
+                                    <label for="make" class="form-label">Brand *</label>
                                     <input type="text" class="form-control" id="make" name="make" 
                                            value="<?= htmlspecialchars($make ?? '') ?>" required>
                                 </div>
@@ -217,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                            value="<?= htmlspecialchars($license_plate ?? '') ?>" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="vin" class="form-label">VIN</label>
+                                    <label for="vin" class="form-label">Chassie Number</label>
                                     <input type="text" class="form-control" id="vin" name="vin" 
                                            value="<?= htmlspecialchars($vin ?? '') ?>" maxlength="17">
                                 </div>
