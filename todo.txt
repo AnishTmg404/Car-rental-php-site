@@ -10,5 +10,5 @@ Make report.php which generates reports(admin feature)
 In booking and admin dashbaord image preview not loading (fix this)
 
 
-update image upload logic for better optimization and dont make copy of same image. Changed/old image will be auto deleted after 30 days
+update image upload logic for better optimization and dont make copy of same image. Changed/old unused image will be auto deleted after 30 days
 like at the first date of the every month (optional yo wala nagarda ni vo) 
