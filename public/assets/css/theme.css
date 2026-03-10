@@ -142,9 +142,9 @@ body {
 }
 
 [data-bs-theme="dark"] .alert-danger {
-    background-color: rgba(255, 107, 107, 0.1);
-    border-color: rgba(255, 107, 107, 0.3);
-    color: #ff6b6b;
+    background-color: #ffe6e6 !important;
+    color: #b30000 !important;
+    border-color: #ff4d4d !important;
 }
 
 [data-bs-theme="dark"] .alert-warning {
@@ -218,4 +218,19 @@ body {
 [data-bs-theme="dark"] .page-item.active .page-link {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
+}
+
+/* Remove default invalid icon and keep only red border */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #dc3545 !important; /* red border */
+    background-image: none !important; /* removes default icon */
+    box-shadow: none !important; /* optional: remove focus shadow */
+}
+
+/* Optional: clean red border on focus */
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }

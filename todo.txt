@@ -1,0 +1,10 @@
+Change VIN to chassie Number in database and code
+
+change make to brand in database and code
+
+In admin, user functions like booking a car by user, admin adding car make it throw error if the error happens
+and pinpoint the error message to find where the problem is occuring or error is throwing
+
+Make report.php which generates reports(admin feature)
+
+In booking and admin dashbaord image preview not loading (fix this)

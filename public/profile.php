@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Invalid email format.';
         } else {
             // Password update logic
-                $password_hash = null;
+            $password_hash = null;
 
             // User is trying to change password?
             if (!empty($current_password) || !empty($new_password) || !empty($confirm_password)) {
@@ -47,62 +47,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (empty($current_password)) {
                     $error = 'Current password is required.';
-                }
-                elseif (!password_verify($current_password, $stored_hash)) {
+                } elseif (!password_verify($current_password, $stored_hash)) {
                     $error = 'Current password is incorrect.';
-                }
-                elseif ($new_password !== $confirm_password) {
+                } elseif ($new_password !== $confirm_password) {
                     $error = 'New password and confirmation do not match.';
-                }
-                else {
+                } else {
                     $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
                 }
             }
 
 
 
-        // Handle profile image upload
-        $profile_image = $current_user['profile_image'] ?? '';
+            // Handle profile image upload
+            $profile_image = $current_user['profile_image'] ?? '';
 
-        if (!empty($_FILES['profile_image']['name'])) {
+            if (!empty($_FILES['profile_image']['name'])) {
 
-            $upload_dir = __DIR__ . '/assets/uploads/profiles/';
-            $db_path = 'assets/uploads/profiles/';
+                $upload_dir = __DIR__ . '/assets/uploads/profiles/';
+                $db_path = 'assets/uploads/profiles/';
 
-            // Create directory if missing
-            if (!is_dir($upload_dir)) {
-                mkdir($upload_dir, 0755, true);
-            }
+                // Create directory if missing
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
 
-            $tmp = $_FILES['profile_image']['tmp_name'];
-            $ext = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
-            $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+                $tmp = $_FILES['profile_image']['tmp_name'];
+                $ext = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
+                $allowed = ['jpg', 'jpeg', 'png', 'gif'];
 
-            if (!in_array($ext, $allowed)) {
-                $error = 'Invalid image format. Allowed: jpg, jpeg, png, gif.';
-            }
-            elseif (getimagesize($tmp) === false) {
-                $error = 'The file is not a valid image.';
-            }
-            else {
-                $new_name = 'user_' . $current_user['id'] . '_' . time() . '.' . $ext;
-                $target = $upload_dir . $new_name;
-
-                if (!move_uploaded_file($tmp, $target)) {
-                    $error = 'Failed to upload profile image.';
+                if (!in_array($ext, $allowed)) {
+                    $error = 'Invalid image format. Allowed: jpg, jpeg, png, gif.';
+                } elseif (getimagesize($tmp) === false) {
+                    $error = 'The file is not a valid image.';
                 } else {
-                    // Delete old image if exists and is not default
-                    if (!empty($current_user['profile_image']) && 
-                        $current_user['profile_image'] !== 'https://via.placeholder.com/120' &&
-                        file_exists(__DIR__ . '/../' . $current_user['profile_image'])) {
-                        unlink(__DIR__ . '/../' . $current_user['profile_image']);
-                    }
+                    $new_name = 'user_' . $current_user['id'] . '_' . time() . '.' . $ext;
+                    $target = $upload_dir . $new_name;
 
-                    // Save DB path
-                    $profile_image = $db_path . $new_name;
+                    if (!move_uploaded_file($tmp, $target)) {
+                        $error = 'Failed to upload profile image.';
+                    } else {
+                        // Delete old image if exists and is not default
+                        if (
+                            !empty($current_user['profile_image']) &&
+                            $current_user['profile_image'] !== 'https://via.placeholder.com/120' &&
+                            file_exists(__DIR__ . '/../' . $current_user['profile_image'])
+                        ) {
+                            unlink(__DIR__ . '/../' . $current_user['profile_image']);
+                        }
+
+                        // Save DB path
+                        $profile_image = $db_path . $new_name;
+                    }
                 }
             }
-        }
 
 
 
@@ -135,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -145,112 +143,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="<?= asset_url('css/styles.css') ?>">
     <link rel="stylesheet" href="<?= asset_url('css/theme.css') ?>">
 </head>
+
 <body>
 
-<?php include '../public/navbar.php'; ?>
+    <?php include '../public/navbar.php'; ?>
 
-<main class="py-4">
-    <div class="container">
-        <div class="row g-4">
-            <!-- Sidebar Quick Actions -->
-            <div class="col-lg-3">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body text-center">
-                        <img src="<?= htmlspecialchars($current_user['profile_image'] ?? 'https://via.placeholder.com/120') ?>" 
-                             class="rounded-circle mb-2" width="120" height="120" alt="Profile Image">
-                        <h6 class="mb-0"><?= htmlspecialchars(($current_user['first_name'] ?? '') . ' ' . ($current_user['last_name'] ?? '')) ?></h6>
-                        <small class="text-muted"><?= htmlspecialchars($current_user['username'] ?? '') ?></small>
+    <main class="py-4">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Sidebar Quick Actions -->
+                <div class="col-lg-3">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body text-center">
+                            <img src="<?= htmlspecialchars($current_user['profile_image'] ?? 'https://via.placeholder.com/120') ?>"
+                                class="rounded-circle mb-2" style="width:120px; aspect-ratio:1/1; object-fit:cover;" alt="Profile Image">
+                            <h6 class="mb-0"><?= htmlspecialchars(($current_user['first_name'] ?? '') . ' ' . ($current_user['last_name'] ?? '')) ?></h6>
+                            <small class="text-muted"><?= htmlspecialchars($current_user['username'] ?? '') ?></small>
+                        </div>
+                    </div>
+                    <div class="list-group">
+                        <a href="<?= base_url('profile.php') ?>" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-person-circle me-2"></i> My Profile
+                        </a>
+                        <a href="<?= base_url('my-booking.php') ?>" class="list-group-item list-group-item-action">
+                            <i class="bi bi-card-checklist me-2"></i> My Bookings
+                        </a>
+                        <a href="<?= base_url('cars.php') ?>" class="list-group-item list-group-item-action">
+                            <i class="bi bi-car-front-fill me-2"></i> Browse Cars
+                        </a>
+                        <a href="<?= base_url('auth/logout.php') ?>" class="list-group-item list-group-item-action text-danger">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        </a>
                     </div>
                 </div>
-                <div class="list-group">
-                    <a href="<?= base_url('profile.php') ?>" class="list-group-item list-group-item-action active">
-                        <i class="bi bi-person-circle me-2"></i> My Profile
-                    </a>
-                    <a href="<?= base_url('my-booking.php') ?>" class="list-group-item list-group-item-action">
-                        <i class="bi bi-card-checklist me-2"></i> My Bookings
-                    </a>
-                    <a href="<?= base_url('cars.php') ?>" class="list-group-item list-group-item-action">
-                        <i class="bi bi-car-front-fill me-2"></i> Browse Cars
-                    </a>
-                    <a href="<?= base_url('auth/logout.php') ?>" class="list-group-item list-group-item-action text-danger">
-                        <i class="bi bi-box-arrow-right me-2"></i> Logout
-                    </a>
-                </div>
-            </div>
 
-            <!-- Profile Form -->
-            <div class="col-lg-9">
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h5 class="mb-0">Edit Profile</h5>
-                    </div>
-                    <div class="card-body">
+                <!-- Profile Form -->
+                <div class="col-lg-9">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">Edit Profile</h5>
+                        </div>
+                        <div class="card-body">
 
-                        <!-- Flash messages -->
-                        <?php if ($error): ?>
-                            <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-                        <?php endif; ?>
-                        <?php if ($success): ?>
-                            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
-                        <?php endif; ?>
+                            <!-- Flash messages -->
+                            <?php if ($error): ?>
+                                <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+                            <?php endif; ?>
+                            <?php if ($success): ?>
+                                <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+                            <?php endif; ?>
 
-                        <form method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                            <form method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
 
-                            <div class="mb-3 text-center">
-                                <input class="form-control mt-2" type="file" name="profile_image" accept="image/*">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Username</label>
-                                <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($current_user['username'] ?? '') ?>" required>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">First Name</label>
-                                    <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($current_user['first_name'] ?? '') ?>" required>
+                                <div class="mb-3 text-center">
+                                    <input class="form-control mt-2" type="file" name="profile_image" accept="image/*">
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Last Name</label>
-                                    <input type="text" name="last_name" class="form-control" value="<?= htmlspecialchars($current_user['last_name'] ?? '') ?>" required>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($current_user['username'] ?? '') ?>" required>
                                 </div>
-                            </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($current_user['email'] ?? '') ?>" required>
-                            </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">First Name</label>
+                                        <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($current_user['first_name'] ?? '') ?>" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Last Name</label>
+                                        <input type="text" name="last_name" class="form-control" value="<?= htmlspecialchars($current_user['last_name'] ?? '') ?>" required>
+                                    </div>
+                                </div>
 
-                            <hr>
-                            <h6>Change Password (optional)</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($current_user['email'] ?? '') ?>" required>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Current Password</label>
-                                <input type="password" name="current_password" class="form-control">
-                            </div>
+                                <hr>
+                                <h6>Change Password (optional)</h6>
 
-                            <div class="mb-3">
-                                <label class="form-label">New Password</label>
-                                <input type="password" name="new_password" class="form-control">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" name="current_password" class="form-control">
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Confirm New Password</label>
-                                <input type="password" name="confirm_password" class="form-control">
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" name="new_password" class="form-control">
+                                </div>
 
-                            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
-                        </form>
+                                <div class="mb-3">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" name="confirm_password" class="form-control">
+                                </div>
 
+                                <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                            </form>
+
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<?php include '../public/footer.php'; ?>
+    <?php include '../public/footer.php'; ?>
 
 </body>
+
 </html>

@@ -76,6 +76,11 @@ a:hover { color: darken(var(--primary-color), 5%); text-decoration: none; }
     border: 2px solid rgba(255,255,255,0.8);
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
+.profile-img {
+    width: 120px;           /* fixed width */
+    aspect-ratio: 1 / 1;    /* keep square */
+    object-fit: cover;       /* crop center if needed */
+}
 
 /* ===========================
    HERO (landing)
@@ -373,4 +378,18 @@ a:hover { color: darken(var(--primary-color), 5%); text-decoration: none; }
     .container { padding-left: 1rem; padding-right: 1rem; }
     .hero-car-img { max-height: 250px; }
     .car-image-container { height: 160px; }
+}
+/* Remove default invalid icon and keep only red border */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #dc3545 !important; /* red border */
+    background-image: none !important; /* removes default icon */
+    box-shadow: none !important; /* optional: remove focus shadow */
+}
+
+/* Optional: clean red border on focus */
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
