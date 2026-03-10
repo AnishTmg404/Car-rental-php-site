@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $year = intval($_POST['year'] ?? 0);
     $color = sanitize_input($_POST['color'] ?? '');
     $license_plate = sanitize_input($_POST['license_plate'] ?? '');
-    $vin = sanitize_input($_POST['vin'] ?? '');
+    $vin = sanitize_input($_POST['vin'] ?? null);
     $mileage = intval($_POST['mileage'] ?? 0);
     $fuel_type = $_POST['fuel_type'] ?? '';
     $transmission = $_POST['transmission'] ?? '';
