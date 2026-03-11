@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $make = $_POST['make'] ?? '';
+    $brand = $_POST['brand'] ?? '';
     $model = $_POST['model'] ?? '';
     $year = $_POST['year'] ?? '';
     $color = $_POST['color'] ?? '';
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $update_data = [
-        'make' => $make,
+        'brand' => $brand,
         'model' => $model,
         'year' => $year,
         'color' => $color,
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <main class="py-4">
 <div class="container">
-    <h1 class="mb-4">Edit Car: <?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></h1>
+    <h1 class="mb-4">Edit Car: <?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h1>
 
     <?php if (has_flash_message('success')): ?>
         <div class="alert alert-success"><?= htmlspecialchars(get_flash_message('success')) ?></div>
@@ -135,8 +135,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Basic Info -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <label class="form-label">Make</label>
-                <input type="text" class="form-control" name="make" value="<?= htmlspecialchars($car['make']) ?>" required>
+                <label class="form-label">brand</label>
+                <input type="text" class="form-control" name="brand" value="<?= htmlspecialchars($car['brand']) ?>" required>
             </div>
             <div class="col-md-6">
                 <label class="form-label">Model</label>

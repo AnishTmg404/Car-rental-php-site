@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h1 class="h3 mb-1">Book a Car</h1>
-                        <p class="text-muted mb-0">Complete your booking for <?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></p>
+                        <p class="text-muted mb-0">Complete your booking for <?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></p>
                     </div>
                     <a href="<?= base_url('car-details.php?id=' . $car['id']) ?>" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left me-2"></i>Back to Car Details
@@ -163,11 +163,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="row">
                             <div class="col-md-6">
                                 <img src="<?= htmlspecialchars($car_images[0] ?? 'https://via.placeholder.com/400x250') ?>" 
-                                     alt="<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>"
+                                     alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>"
                                      class="img-fluid rounded mb-3">
                             </div>
                             <div class="col-md-6">
-                                <h4><?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></h4>
+                                <h4><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h4>
                                 <p class="text-muted"><?= htmlspecialchars($car['year']) ?> • <?= htmlspecialchars($car['fuel_type']) ?> • <?= htmlspecialchars($car['transmission']) ?></p>
                                 
                                 <div class="mb-3">

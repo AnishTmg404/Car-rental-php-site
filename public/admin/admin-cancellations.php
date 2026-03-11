@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/auth.php';
-require_once __DIR__ . '/url.php';
+require_once __DIR__ . '/../../config/auth.php';
+require_once __DIR__ . '/../url.php';
 
 // Require admin login
 require_login();
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch pending cancellation requests with user and booking info
 $requests = db_fetch_all("
     SELECT bc.*, b.car_id, b.pickup_date, b.return_date, b.total_amount, b.status AS booking_status,
-           c.make, c.model,
+           c.brand, c.model,
            u.first_name, u.last_name, u.username
     FROM booking_cancellations bc
     JOIN bookings b ON bc.booking_id = b.id
@@ -67,7 +67,7 @@ $requests = db_fetch_all("
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
 </head>
 <body>
-<?php include '../public/navbar.php'; ?>
+<?php include '../navbar.php'; ?>
 
 <main class="py-4">
     <div class="container">
@@ -103,7 +103,7 @@ $requests = db_fetch_all("
                             <tr>
                                 <td><?= $i + 1 ?></td>
                                 <td><?= htmlspecialchars($r['first_name'] . ' ' . $r['last_name'] . ' (' . $r['username'] . ')') ?></td>
-                                <td><?= htmlspecialchars($r['make'] . ' ' . $r['model']) ?></td>
+                                <td><?= htmlspecialchars($r['brand'] . ' ' . $r['model']) ?></td>
                                 <td><?= htmlspecialchars($r['pickup_date'] . ' → ' . $r['return_date']) ?></td>
                                 <td>$<?= number_format($r['total_amount'], 2) ?></td>
                                 <td><?= nl2br(htmlspecialchars($r['cancel_reason'])) ?></td>

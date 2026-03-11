@@ -18,7 +18,7 @@ if (!$booking_id) {
 // Fetch booking & join with car data
 $booking = db_fetch("
     SELECT b.*, 
-           c.make, c.model, c.year, c.daily_rate, c.images 
+           c.brand, c.model, c.year, c.daily_rate, c.images 
     FROM bookings b
     JOIN cars c ON b.car_id = c.id
     WHERE b.id = ? AND b.user_id = ?
@@ -81,9 +81,9 @@ $cancel_request = db_fetch("SELECT * FROM booking_cancellations WHERE booking_id
             <div class="card shadow-sm">
                 <img src="<?= htmlspecialchars($car_image) ?>" 
                      class="card-img-top" 
-                     alt="<?= htmlspecialchars($booking['make'] . ' ' . $booking['model']) ?>">
+                     alt="<?= htmlspecialchars($booking['brand'] . ' ' . $booking['model']) ?>">
                 <div class="card-body">
-                    <h4><?= htmlspecialchars($booking['make'] . ' ' . $booking['model']) ?></h4>
+                    <h4><?= htmlspecialchars($booking['brand'] . ' ' . $booking['model']) ?></h4>
                     <p class="text-muted">
                         <?= $booking['year'] ?> • $<?= number_format($booking['daily_rate'], 2) ?>/day
                     </p>

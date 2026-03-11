@@ -32,7 +32,7 @@ if (isset($_GET['action'], $_GET['id'])) {
 
 // Fetch all bookings with car and user info
 $bookings = db_fetch_all("
-    SELECT b.*, u.first_name, u.last_name, u.email, c.make, c.model, c.images
+    SELECT b.*, u.first_name, u.last_name, u.email, c.brand, c.model, c.images
     FROM bookings b
     JOIN users u ON b.user_id = u.id
     JOIN cars c ON b.car_id = c.id
@@ -107,7 +107,7 @@ $bookings = db_fetch_all("
                         <?php if($img): ?>
                         <img src="<?= htmlspecialchars($img) ?>" alt="Car Image" class="car-img me-2">
                         <?php endif; ?>
-                        <span><?= htmlspecialchars($b['make'].' '.$b['model']) ?></span>
+                        <span><?= htmlspecialchars($b['brand'].' '.$b['model']) ?></span>
                     </div>
                 </td>
                 <td>

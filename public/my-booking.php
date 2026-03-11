@@ -9,7 +9,7 @@ $current_user = get_current_user_data();
 
 // Fetch all bookings with potential cancellation requests
 $bookings = db_fetch_all("
-    SELECT b.*, c.make, c.model, c.daily_rate,
+    SELECT b.*, c.brand, c.model, c.daily_rate,
            bc.status AS cancel_status
     FROM bookings b
     JOIN cars c ON b.car_id = c.id
@@ -103,7 +103,7 @@ function booking_status_badge($status) {
                                     <?php foreach ($bookings as $i => $b): ?>
                                         <tr>
                                             <td><?= $i + 1 ?></td>
-                                            <td><?= htmlspecialchars($b['make'] . ' ' . $b['model']) ?></td>
+                                            <td><?= htmlspecialchars($b['brand'] . ' ' . $b['model']) ?></td>
                                             <td><?= date('d/m/Y', strtotime($b['pickup_date'])) ?></td>
                                             <td><?= date('d/m/Y', strtotime($b['return_date'])) ?></td>
                                             <td><?= intval($b['total_days']) ?></td>

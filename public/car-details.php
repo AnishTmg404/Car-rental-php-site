@@ -49,7 +49,7 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $page_title ?> - <?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?> - Car Rental</title>
+    <title><?= $page_title ?> - <?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?> - Car Rental</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="<?= asset_url('css/styles.css') ?>">
@@ -67,7 +67,7 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="<?= base_url('index.php') ?>">Home</a></li>
                 <li class="breadcrumb-item"><a href="<?= base_url('cars.php') ?>">Cars</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></li>
+                <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></li>
             </ol>
         </nav>
 
@@ -146,7 +146,7 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h4><?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></h4>
+                                <h4><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h4>
                                 <p class="text-muted mb-3"><?= htmlspecialchars($car['year']) ?> • <?= htmlspecialchars($car['color']) ?></p>
                                 
                                 <?php if ($car['description']): ?>
@@ -358,13 +358,13 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                                 <div class="card h-100 car-card">
                                     <div class="car-image-container">
                                         <img src="<?= htmlspecialchars($similar_images[0] ?? 'https://via.placeholder.com/400x250') ?>" 
-                                             class="card-img-top car-image" alt="<?= htmlspecialchars($similar_car['make'] . ' ' . $similar_car['model']) ?>">
+                                             class="card-img-top car-image" alt="<?= htmlspecialchars($similar_car['brand'] . ' ' . $similar_car['model']) ?>">
                                         <div class="car-status">
                                             <span class="badge bg-success">Available</span>
                                         </div>
                                     </div>
                                     <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title"><?= htmlspecialchars($similar_car['make'] . ' ' . $similar_car['model']) ?></h5>
+                                        <h5 class="card-title"><?= htmlspecialchars($similar_car['brand'] . ' ' . $similar_car['model']) ?></h5>
                                         <p class="card-text text-muted small">
                                             <?= htmlspecialchars($similar_car['year']) ?> • <?= htmlspecialchars($similar_car['fuel_type']) ?> • <?= htmlspecialchars($similar_car['transmission']) ?>
                                         </p>

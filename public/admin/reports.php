@@ -30,7 +30,7 @@ $booking_status_counts = db_fetch_all("
 
 // Top 5 most booked cars
 $top_cars = db_fetch_all("
-    SELECT c.make, c.model, COUNT(b.id) as total_bookings
+    SELECT c.brand, c.model, COUNT(b.id) as total_bookings
     FROM bookings b
     JOIN cars c ON b.car_id = c.id
     GROUP BY b.car_id
@@ -162,7 +162,7 @@ $total_users = db_fetch("SELECT COUNT(*) as count FROM users WHERE role='user'")
                                 <tbody>
                                     <?php foreach ($top_cars as $car): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></td>
+                                            <td><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></td>
                                             <td><?= $car['total_bookings'] ?></td>
                                         </tr>
                                     <?php endforeach; ?>

@@ -46,7 +46,7 @@ $monthly_revenue = db_fetch("SELECT SUM(total_amount) as total FROM bookings WHE
 
 // Recent bookings
 $recent_bookings = db_fetch_all("
-    SELECT b.*, u.first_name, u.last_name, u.email, c.make, c.model, c.images 
+    SELECT b.*, u.first_name, u.last_name, u.email, c.brand, c.model, c.images 
     FROM bookings b 
     JOIN users u ON b.user_id = u.id 
     JOIN cars c ON b.car_id = c.id 
@@ -215,7 +215,7 @@ $pending_cancels = db_fetch("SELECT COUNT(*) as count FROM booking_cancellations
                             <tr>
                                 <td class="d-flex align-items-center">
                                     <img src="<?= htmlspecialchars($car_image) ?>" alt="Car" class="table-img me-2">
-                                    <?= htmlspecialchars($booking['make'].' '.$booking['model']) ?>
+                                    <?= htmlspecialchars($booking['brand'].' '.$booking['model']) ?>
                                 </td>
                                 <td>
                                     <div class="fw-semibold"><?= htmlspecialchars($booking['first_name'].' '.$booking['last_name']) ?></div>

@@ -15,7 +15,7 @@ $page_title = 'Booking Cancellation Requests';
 $cancellations = db_fetch_all("
     SELECT bc.*, b.user_id, b.car_id, b.pickup_date, b.return_date, b.total_amount, b.status AS booking_status,
            u.first_name, u.last_name, u.username,
-           c.make, c.model
+           c.brand, c.model
     FROM booking_cancellations bc
     JOIN bookings b ON bc.booking_id = b.id
     JOIN users u ON b.user_id = u.id
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <tr>
                             <td><?= $i + 1 ?></td>
                             <td><?= htmlspecialchars($c['first_name'] . ' ' . $c['last_name']) ?><br><small class="text-muted"><?= htmlspecialchars($c['username']) ?></small></td>
-                            <td><?= htmlspecialchars($c['make'] . ' ' . $c['model']) ?></td>
+                            <td><?= htmlspecialchars($c['brand'] . ' ' . $c['model']) ?></td>
                             <td><?= date('d/m/Y', strtotime($c['pickup_date'])) ?> - <?= date('d/m/Y', strtotime($c['return_date'])) ?></td>
                             <td>$<?= number_format($c['total_amount'], 2) ?></td>
                             <td><?= nl2br(htmlspecialchars($c['cancel_reason'])) ?></td>

@@ -89,7 +89,7 @@ $where_conditions = [];
 $params = [];
 
 if ($search) {
-    $where_conditions[] = "(make LIKE ? OR model LIKE ? OR license_plate LIKE ?)";
+    $where_conditions[] = "(brand LIKE ? OR model LIKE ? OR license_plate LIKE ?)";
     $params[] = "%$search%";
     $params[] = "%$search%";
     $params[] = "%$search%";
@@ -173,7 +173,7 @@ $statuses = db_fetch_all("SELECT DISTINCT status FROM cars ORDER BY status");
                     <div class="col-md-4">
                         <label for="search" class="form-label">Search Cars</label>
                         <input type="text" class="form-control" id="search" name="search" 
-                               value="<?= htmlspecialchars($search) ?>" placeholder="Make, model, or license plate">
+                               value="<?= htmlspecialchars($search) ?>" placeholder="brand, model, or license plate">
                     </div>
                     <div class="col-md-3">
                         <label for="status" class="form-label">Status</label>
@@ -239,14 +239,14 @@ $statuses = db_fetch_all("SELECT DISTINCT status FROM cars ORDER BY status");
                                     <td>
                                         <div class="car-thumbnail">
                                             <img src="<?= htmlspecialchars(car_image_url($images[0] ?? null)) ?>" 
-                                                alt="<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>"
+                                                alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>"
                                                 class="img-thumbnail"
                                                 style="width: 80px; height: 60px; object-fit: cover;">
                                         </div>
                                     </td>
                                     <td>
                                         <div>
-                                            <div class="fw-semibold"><?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></div>
+                                            <div class="fw-semibold"><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></div>
                                             <small class="text-muted"><?= htmlspecialchars($car['year']) ?> • <?= htmlspecialchars($car['color']) ?></small>
                                             <div class="small text-muted">License: <?= htmlspecialchars($car['license_plate']) ?></div>
                                         </div>
@@ -290,7 +290,7 @@ $statuses = db_fetch_all("SELECT DISTINCT status FROM cars ORDER BY status");
                                                 <i class="bi bi-<?= $car['status'] === 'available' ? 'pause' : 'play' ?>"></i>
                                             </button>
                                             <button type="button" class="btn btn-outline-danger" 
-                                                    onclick="deleteCar(<?= $car['id'] ?>, '<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>')" 
+                                                    onclick="deleteCar(<?= $car['id'] ?>, '<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>')" 
                                                     title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>

@@ -15,7 +15,7 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
-    $make = sanitize_input($_POST['make'] ?? '');
+    $brand = sanitize_input($_POST['brand'] ?? '');
     $model = sanitize_input($_POST['model'] ?? '');
     $year = intval($_POST['year'] ?? 0);
     $color = sanitize_input($_POST['color'] ?? '');
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Required fields
-    if (empty($make)) $errors['make'] = "Brand is required";
+    if (empty($brand)) $errors['brand'] = "Brand is required";
     if (empty($model)) $errors['model'] = "Model is required";
     if (empty($license_plate)) $errors['license_plate'] = "License plate required";
     if (empty($fuel_type)) $errors['fuel_type'] = "Select fuel type";
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // }
 
         $car_data = [
-            'make' => $make,
+            'brand' => $brand,
             'model' => $model,
             'year' => $year,
             'color' => $color,
@@ -221,16 +221,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <h6 class="text-primary mb-3">Basic Information</h6>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="make" class="form-label">Brand *</label>
+                                        <label for="brand" class="form-label">Brand *</label>
                                         <input type="text"
-                                            id="make"
-                                            name="make"
-                                            class="form-control <?= isset($errors['make']) ? 'is-invalid' : '' ?>"
-                                            value="<?= htmlspecialchars($make ?? '') ?>">
+                                            id="brand"
+                                            name="brand"
+                                            class="form-control <?= isset($errors['brand']) ? 'is-invalid' : '' ?>"
+                                            value="<?= htmlspecialchars($brand ?? '') ?>">
 
-                                        <?php if (!empty($errors['make'])): ?>
+                                        <?php if (!empty($errors['brand'])): ?>
                                             <div class="invalid-feedback">
-                                                <?= htmlspecialchars($errors['make']) ?>
+                                                <?= htmlspecialchars($errors['brand']) ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>

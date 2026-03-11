@@ -22,7 +22,7 @@ $total_spent = db_fetch("SELECT SUM(total_amount) as total FROM bookings WHERE u
 
 // Get recent bookings
 $recent_bookings = db_fetch_all("
-    SELECT b.*, c.make, c.model, c.images, c.daily_rate 
+    SELECT b.*, c.brand, c.model, c.images, c.daily_rate 
     FROM bookings b 
     JOIN cars c ON b.car_id = c.id 
     WHERE b.user_id = ? 
@@ -155,7 +155,7 @@ $favorite_cars = db_fetch_all("
                             <div class="text-center py-5">
                                 <i class="bi bi-calendar-x fs-1 text-muted mb-3"></i>
                                 <h5 class="text-muted">No bookings yet</h5>
-                                <p class="text-muted">Start exploring our car fleet and make your first booking!</p>
+                                <p class="text-muted">Start exploring our car fleet and brand your first booking!</p>
                                 <a href="<?= base_url('cars.php') ?>" class="btn btn-primary">Browse Cars</a>
                             </div>
                         <?php else: ?>
@@ -179,10 +179,10 @@ $favorite_cars = db_fetch_all("
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <img src="<?= htmlspecialchars($images[0] ?? 'https://via.placeholder.com/60x40') ?>" 
-                                                             alt="<?= htmlspecialchars($booking['make'] . ' ' . $booking['model']) ?>"
+                                                             alt="<?= htmlspecialchars($booking['brand'] . ' ' . $booking['model']) ?>"
                                                              class="img-thumbnail me-3" style="width: 60px; height: 40px; object-fit: cover;">
                                                         <div>
-                                                            <div class="fw-semibold"><?= htmlspecialchars($booking['make'] . ' ' . $booking['model']) ?></div>
+                                                            <div class="fw-semibold"><?= htmlspecialchars($booking['brand'] . ' ' . $booking['model']) ?></div>
                                                             <small class="text-muted">Booking #<?= $booking['id'] ?></small>
                                                         </div>
                                                     </div>
@@ -268,10 +268,10 @@ $favorite_cars = db_fetch_all("
                                 ?>
                                 <div class="d-flex align-items-center mb-3">
                                     <img src="<?= htmlspecialchars($images[0] ?? 'https://via.placeholder.com/50x35') ?>" 
-                                         alt="<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>"
+                                         alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>"
                                          class="img-thumbnail me-3" style="width: 50px; height: 35px; object-fit: cover;">
                                     <div class="flex-grow-1">
-                                        <div class="fw-semibold small"><?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></div>
+                                        <div class="fw-semibold small"><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></div>
                                         <div class="text-muted small">Booked <?= $car['booking_count'] ?> time<?= $car['booking_count'] > 1 ? 's' : '' ?></div>
                                     </div>
                                     <a href="<?= base_url('car-details.php?id=' . $car['id']) ?>" class="btn btn-sm btn-outline-primary">

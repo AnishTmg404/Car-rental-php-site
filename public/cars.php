@@ -23,7 +23,7 @@ $where_conditions = ["status = 'available'"];
 $params = [];
 
 if ($search) {
-    $where_conditions[] = "(make LIKE ? OR model LIKE ? OR description LIKE ?)";
+    $where_conditions[] = "(brand LIKE ? OR model LIKE ? OR description LIKE ?)";
     $params[] = "%$search%";
     $params[] = "%$search%";
     $params[] = "%$search%";
@@ -111,7 +111,7 @@ $price_range = db_fetch("SELECT MIN(daily_rate) as min_price, MAX(daily_rate) as
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                             <input type="text" class="form-control" id="search" name="search" 
-                                   value="<?= htmlspecialchars($search) ?>" placeholder="Make, model, or description">
+                                   value="<?= htmlspecialchars($search) ?>" placeholder="brand, model, or description">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -217,7 +217,7 @@ $price_range = db_fetch("SELECT MIN(daily_rate) as min_price, MAX(daily_rate) as
                     <div class="card h-100 car-card">
                         <div class="car-image-container">
                             <img src="<?= htmlspecialchars($images[0] ?? 'https://via.placeholder.com/400x250') ?>" 
-                                 class="card-img-top car-image" alt="<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>">
+                                 class="card-img-top car-image" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>">
                             <div class="car-status">
                                 <span class="badge bg-success">Available</span>
                             </div>
@@ -232,7 +232,7 @@ $price_range = db_fetch("SELECT MIN(daily_rate) as min_price, MAX(daily_rate) as
                             </div>
                         </div>
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></h5>
+                            <h5 class="card-title"><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h5>
                             <p class="card-text text-muted small">
                                 <?= htmlspecialchars($car['year']) ?> • <?= htmlspecialchars($car['fuel_type']) ?> • <?= htmlspecialchars($car['transmission']) ?>
                             </p>

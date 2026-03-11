@@ -147,7 +147,7 @@ require_once '../config/auth.php';
                             <div class="card h-100 car-card">
                                 <div class="car-image-container">
                                     <img src="<?= htmlspecialchars($images[0] ?? 'https://via.placeholder.com/400x250') ?>"
-                                        class="card-img-top car-image" alt="<?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?>">
+                                        class="card-img-top car-image" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>">
                                     <div class="car-status">
                                         <span class="badge bg-success">Available</span>
                                     </div>
@@ -157,7 +157,7 @@ require_once '../config/auth.php';
                                     </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title"><?= htmlspecialchars($car['make'] . ' ' . $car['model']) ?></h5>
+                                    <h5 class="card-title"><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h5>
                                     <p class="card-text text-muted small">
                                         <?= htmlspecialchars($car['year']) ?> • <?= htmlspecialchars($car['fuel_type']) ?> • <?= htmlspecialchars($car['transmission']) ?>
                                     </p>
