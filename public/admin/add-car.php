@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $year = intval($_POST['year'] ?? 0);
     $color = sanitize_input($_POST['color'] ?? '');
     $license_plate = sanitize_input($_POST['license_plate'] ?? '');
-    $vin = sanitize_input($_POST['vin'] ?? null);
+    $chassis_number = sanitize_input($_POST['chassis_number'] ?? null);
     $mileage = intval($_POST['mileage'] ?? 0);
     $fuel_type = $_POST['fuel_type'] ?? '';
     $transmission = $_POST['transmission'] ?? '';
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'year' => $year,
             'color' => $color,
             'license_plate' => $license_plate,
-            'vin' => $vin,
+            'chassis_number' => $chassis_number,
             'mileage' => $mileage,
             'fuel_type' => $fuel_type,
             'transmission' => $transmission,
@@ -279,9 +279,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <?php endif; ?>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="vin" class="form-label">Chassie Number</label>
-                                        <input type="text" class="form-control" id="vin" name="vin"
-                                            value="<?= htmlspecialchars($vin ?? '') ?>" maxlength="17">
+                                        <label for="chassis_number" class="form-label">Chassie Number</label>
+                                        <input type="text" class="form-control" id="chassis_number" name="chassis_number"
+                                            value="<?= htmlspecialchars($chassis_number ?? '') ?>" maxlength="17">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="fuel_type" class="form-label">Fuel Type *</label>
