@@ -16,6 +16,3 @@ add payment options(payment table already exist on db)
 fix the need help section in car details.php ui so that it doesn't move when scrolled down
 
 add admin/booking details where admin can see the booking details of the car alongside with info like who booked, when etc
-
-
-remove the test Credential form the code login.php and amdin.php
