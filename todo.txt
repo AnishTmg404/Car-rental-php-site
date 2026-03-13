@@ -7,7 +7,7 @@ and pinpoint the error message to find where the problem is occuring or error is
 
 Make report.php which generates reports(admin feature) ✅
 
-In booking and admin dashbaord image preview not loading (fix this) ✅
+In booking and admin dashbaord image preview not loading (fix this) 
 
 remove the test Credential form the code login.php and amdin.php ✅
 
