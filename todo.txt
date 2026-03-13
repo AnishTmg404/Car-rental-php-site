@@ -18,3 +18,5 @@ add review by users after car has been booked and completed or returned( review 
 fix the need help section in car details.php ui so that it doesn't move when scrolled down
 
 add admin/booking details where admin can see the booking details of the car alongside with info like who booked, when etc
+
+fix deleting car from admin side as some of the car's can't be deleted as its in active listing
