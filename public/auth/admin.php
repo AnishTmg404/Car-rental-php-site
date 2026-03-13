@@ -136,14 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <!-- Test Credentials -->
-            <div class="mt-4 p-3 bg-light rounded">
-                <h6 class="text-muted mb-2">Test Credentials:</h6>
-                <div class="small text-muted">
-                    <strong>Admin:</strong> admin@carrental.com / password<br>
-                    <strong>User:</strong> user@example.com / password123
-                </div>
-            </div>
         </div>
     </div>
 
