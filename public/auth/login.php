@@ -42,21 +42,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // If no validation errors
     if (!array_filter($errors)) {
 
-        $user = db_fetch(
-            "SELECT * FROM users WHERE email = ? AND status = 'active'",
-            [$email]
-        );
+        $user = db_fetch("SELECT * FROM users WHERE email = ?", [$email]);
 
         if ($user && verify_password($password, $user['password_hash'])) {
-
-            login_user($user);
-            set_flash_message('success', 'Welcome back, ' . $user['first_name'] . '!');
-            header('Location: ' . base_url('index.php'));
-            exit;
+            
+            // Check account status
+            if ($user['status'] === 'suspended') {
+                $errors['email'] = "Your account has been suspended. Please contact support.";
+            } elseif ($user['status'] === 'inactive') {
+                $errors['email'] = "Your account is currently inactive.";
+            } else {
+                // Status is 'active' - Proceed with login
+                login_user($user);
+                set_flash_message('success', 'Welcome back, ' . $user['first_name'] . '!');
+                header('Location: ' . base_url('index.php'));
+                exit;
+            }
         } else {
-
+            // Generic error for security
             $errors['password'] = "Invalid email or password.";
-        }
+            }
     }
 }
 ?>

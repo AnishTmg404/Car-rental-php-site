@@ -267,7 +267,7 @@ $pending_cancels = db_fetch("SELECT COUNT(*) as count FROM booking_cancellations
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="<?= base_url('users/booking-details.php?id=' . $booking['id']) ?>" class="btn btn-outline-primary">
+                                            <a href="<?= base_url('admin/booking-details.php?id=' . $booking['id']) ?>" class="btn btn-outline-primary">
                                                 <i class="bi bi-eye"></i>
                                             </a>
 

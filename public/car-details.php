@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/url.php';
 
@@ -62,7 +61,6 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
 
 <main class="py-4">
     <div class="container">
-        <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="<?= base_url('index.php') ?>">Home</a></li>
@@ -72,74 +70,40 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
         </nav>
 
         <div class="row g-4">
-            <!-- Car Gallery -->
             <div class="col-lg-8">
-                <div class="card shadow-sm">
+                <div class="card shadow-sm border-0">
                     <div id="carImageCarousel" class="carousel slide" data-bs-ride="carousel">
-
                         <?php if (count($car_images) > 1): ?>
                             <div class="carousel-indicators">
                                 <?php foreach ($car_images as $i => $img): ?>
-                                    <button
-                                        type="button"
-                                        data-bs-target="#carImageCarousel"
-                                        data-bs-slide-to="<?= $i ?>"
-                                        class="<?= $i === 0 ? 'active' : '' ?>"
-                                        aria-current="<?= $i === 0 ? 'true' : 'false' ?>">
-                                    </button>
+                                    <button type="button" data-bs-target="#carImageCarousel" data-bs-slide-to="<?= $i ?>" class="<?= $i === 0 ? 'active' : '' ?>"></button>
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
 
-                        <div class="carousel-inner">
+                        <div class="carousel-inner rounded-top">
                             <?php if (!empty($car_images)): ?>
                                 <?php foreach ($car_images as $index => $image): ?>
-                                    <?php
-                                        $img_src = filter_var($image, FILTER_VALIDATE_URL)
-                                            ? $image
-                                            : base_url($image);
-                                    ?>
+                                    <?php $img_src = filter_var($image, FILTER_VALIDATE_URL) ? $image : base_url($image); ?>
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-                                        <img
-                                            src="<?= htmlspecialchars($img_src) ?>"
-                                            class="d-block w-100"
-                                            style="height: 480px; object-fit: cover;"
-                                            alt="Car image <?= $index + 1 ?>">
+                                        <img src="<?= htmlspecialchars($img_src) ?>" class="d-block w-100" style="height: 480px; object-fit: cover;" alt="Car Image">
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <div class="carousel-item active">
-                                    <img
-                                        src="https://via.placeholder.com/800x500"
-                                        class="d-block w-100"
-                                        alt="No image available">
+                                    <img src="https://via.placeholder.com/800x500" class="d-block w-100" alt="No image available">
                                 </div>
                             <?php endif; ?>
                         </div>
 
                         <?php if (count($car_images) > 1): ?>
-                            <button
-                                class="carousel-control-prev"
-                                type="button"
-                                data-bs-target="#carImageCarousel"
-                                data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon"></span>
-                            </button>
-
-                            <button
-                                class="carousel-control-next"
-                                type="button"
-                                data-bs-target="#carImageCarousel"
-                                data-bs-slide="next">
-                                <span class="carousel-control-next-icon"></span>
-                            </button>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carImageCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carImageCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
                         <?php endif; ?>
-
                     </div>
                 </div>
 
-                <!-- Car Information -->
-                <div class="card mt-4">
+                <div class="card mt-4 shadow-sm">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Car Information</h5>
                     </div>
@@ -157,14 +121,10 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                                     <h6 class="mb-2">Features:</h6>
                                     <div class="d-flex flex-wrap gap-2">
                                         <?php 
-                                        // 1. Decode the JSON
                                         $features_data = json_decode($car['features'], true);
-
-                                        // 2. Normalize the data
                                         $final_list = [];
                                         if (is_array($features_data)) {
                                             foreach ($features_data as $item) {
-                                                // If the item itself contains a comma, split it (fixes your current DB issue)
                                                 if (strpos($item, ',') !== false) {
                                                     $split_items = explode(',', $item);
                                                     foreach ($split_items as $s) $final_list[] = trim($s);
@@ -173,8 +133,6 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                                                 }
                                             }
                                         }
-
-                                        // 3. Render the pills
                                         foreach (array_unique($final_list) as $feature): 
                                             if (empty($feature)) continue;
                                         ?>
@@ -185,48 +143,17 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                             </div>
                             <div class="col-md-6">
                                 <div class="car-specs">
-                                    <div class="spec-item">
-                                        <span class="spec-label">Fuel Type:</span>
-                                        <span class="spec-value"><?= ucfirst($car['fuel_type']) ?></span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="spec-label">Transmission:</span>
-                                        <span class="spec-value"><?= ucfirst($car['transmission']) ?></span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="spec-label">Seats:</span>
-                                        <span class="spec-value"><?= $car['seats'] ?></span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="spec-label">Doors:</span>
-                                        <span class="spec-value"><?= $car['doors'] ?></span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="spec-label">Category:</span>
-                                        <span class="spec-value"><?= ucfirst($car['category']) ?></span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="spec-label">Mileage:</span>
-                                        <span class="spec-value"><?= number_format($car['mileage']) ?> km</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <span class="spec-label">License Plate:</span>
-                                        <span class="spec-value"><?= htmlspecialchars($car['license_plate']) ?></span>
-                                    </div>
+                                    <div class="spec-item"><span class="spec-label">Fuel Type:</span> <span class="spec-value"><?= ucfirst($car['fuel_type']) ?></span></div>
+                                    <div class="spec-item"><span class="spec-label">Transmission:</span> <span class="spec-value"><?= ucfirst($car['transmission']) ?></span></div>
+                                    <div class="spec-item"><span class="spec-label">Seats:</span> <span class="spec-value"><?= $car['seats'] ?></span></div>
+                                    <div class="spec-item"><span class="spec-label">Doors:</span> <span class="spec-value"><?= $car['doors'] ?></span></div>
+                                    <div class="spec-item"><span class="spec-label">Category:</span> <span class="spec-value"><?= ucfirst($car['category']) ?></span></div>
+                                    <div class="spec-item"><span class="spec-label">Mileage:</span> <span class="spec-value"><?= number_format($car['mileage']) ?> km</span></div>
+                                    <div class="spec-item"><span class="spec-label">License Plate:</span> <span class="spec-value"><?= htmlspecialchars($car['license_plate']) ?></span></div>
                                     <div class="spec-item">
                                         <span class="spec-label">Status:</span>
-                                        <span class="spec-value">
-                                            <?php
-                                            $status_class = match($car['status']) {
-                                                'available' => 'success',
-                                                'rented' => 'primary',
-                                                'maintenance' => 'warning',
-                                                'unavailable' => 'danger',
-                                                default => 'secondary'
-                                            };
-                                            ?>
-                                            <span class="badge bg-<?= $status_class ?>"><?= ucfirst($car['status']) ?></span>
-                                        </span>
+                                        <?php $status_class = match($car['status']) {'available'=>'success','rented'=>'primary','maintenance'=>'warning','unavailable'=>'danger',default=>'secondary'}; ?>
+                                        <span class="badge bg-<?= $status_class ?>"><?= ucfirst($car['status']) ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -234,9 +161,8 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                     </div>
                 </div>
 
-                <!-- Reviews Section -->
                 <?php if (!empty($reviews)): ?>
-                    <div class="card mt-4">
+                    <div class="card mt-4 shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Customer Reviews</h5>
                             <div class="d-flex align-items-center">
@@ -263,9 +189,7 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                                             <?php endfor; ?>
                                         </div>
                                     </div>
-                                    <?php if ($review['comment']): ?>
-                                        <p class="mb-0"><?= htmlspecialchars($review['comment']) ?></p>
-                                    <?php endif; ?>
+                                    <?php if ($review['comment']): ?><p class="mb-0"><?= htmlspecialchars($review['comment']) ?></p><?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -273,101 +197,96 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                 <?php endif; ?>
             </div>
 
-            <!-- Booking Sidebar -->
             <div class="col-lg-4">
-                <div class="card booking-form">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Book This Car</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="text-center mb-4">
-                            <h3 class="text-primary mb-1">Rs.<?= number_format($car['daily_rate'], 2) ?></h3>
-                            <small class="text-muted">per day</small>
+                <div class="sticky-top" style="top: 20px; z-index: 10;">
+                    
+                    <div class="card booking-form shadow-sm mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Book This Car</h5>
                         </div>
+                        <div class="card-body p-4">
+                            <div class="text-center mb-4">
+                                <h3 class="text-primary mb-1">Rs.<?= number_format($car['daily_rate'], 2) ?></h3>
+                                <small class="text-muted">per day</small>
+                            </div>
 
-                        <?php if ($car['status'] === 'available'): ?>
                             <div class="d-grid gap-2">
-                                <?php if (is_logged_in()): ?>
-                                    <a href="<?= base_url('book-car.php?id=' . $car['id']) ?>" class="btn btn-primary btn-lg">
-                                        <i class="bi bi-calendar-check me-2"></i>Book Now
-                                    </a>
+                                <?php if ($car['status'] === 'available'): ?>
+                                    <?php if (is_logged_in()): ?>
+                                        <a href="<?= base_url('book-car.php?id=' . $car['id']) ?>" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-calendar-check me-2"></i>Book Now
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?= base_url('auth/login.php') ?>" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-box-arrow-in-right me-2"></i>Login to Book
+                                        </a>
+                                    <?php endif; ?>
                                 <?php else: ?>
-                                    <a href="<?= base_url('auth/login.php') ?>" class="btn btn-primary btn-lg">
-                                        <i class="bi bi-box-arrow-in-right me-2"></i>Login to Book
-                                    </a>
+                                    <div class="alert alert-warning text-center small py-2">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>Unavailable
+                                    </div>
                                 <?php endif; ?>
                                 <a href="<?= base_url('cars.php') ?>" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-2"></i>Back to Cars
                                 </a>
                             </div>
-                        <?php else: ?>
-                            <div class="alert alert-warning text-center">
-                                <i class="bi bi-exclamation-triangle me-2"></i>
-                                This car is currently <?= $car['status'] ?>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <a href="<?= base_url('cars.php') ?>" class="btn btn-outline-secondary">
-                                    <i class="bi bi-arrow-left me-2"></i>Back to Cars
-                                </a>
-                            </div>
-                        <?php endif; ?>
 
-                        <hr class="my-4">
+                            <hr class="my-4">
 
-                        <div class="text-center">
-                            <h6 class="mb-3">Why choose this car?</h6>
-                            <div class="row text-center">
-                                <div class="col-4">
-                                    <i class="bi bi-shield-check text-success fs-4"></i>
-                                    <div class="small mt-1">Insured</div>
-                                </div>
-                                <div class="col-4">
-                                    <i class="bi bi-clock text-primary fs-4"></i>
-                                    <div class="small mt-1">24/7 Support</div>
-                                </div>
-                                <div class="col-4">
-                                    <i class="bi bi-award text-warning fs-4"></i>
-                                    <div class="small mt-1">Premium</div>
+                            <div class="text-center">
+                                <h6 class="mb-3 small fw-bold">Why choose this car?</h6>
+                                <div class="row g-0 text-center">
+                                    <div class="col-4">
+                                        <i class="bi bi-shield-check text-success fs-4"></i>
+                                        <div class="small mt-1" style="font-size: 0.7rem;">Insured</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="bi bi-clock text-primary fs-4"></i>
+                                        <div class="small mt-1" style="font-size: 0.7rem;">24/7 Support</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="bi bi-award text-warning fs-4"></i>
+                                        <div class="small mt-1" style="font-size: 0.7rem;">Premium</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Contact Info -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h6 class="card-title mb-0">Need Help?</h6>
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="card-title mb-0 fw-bold">
+                                <i class="bi bi-headset me-2 text-primary"></i>Need Help?
+                            </h6>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item border-0 py-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-telephone text-primary me-3"></i>
+                                    <div>
+                                        <div class="fw-bold small">Call Us</div>
+                                        <div class="text-muted" style="font-size: 0.8rem;">+977 98XXXXXXXX</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item border-0 py-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-envelope text-primary me-3"></i>
+                                    <div>
+                                        <div class="fw-bold small">Email Us</div>
+                                        <div class="text-muted" style="font-size: 0.8rem;">support@carrental.com</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-telephone text-primary me-3"></i>
-                            <div>
-                                <div class="fw-semibold">Call Us</div>
-                                <small class="text-muted">+977 98XXXXXXXX</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-envelope text-primary me-3"></i>
-                            <div>
-                                <div class="fw-semibold">Email Us</div>
-                                <small class="text-muted">support@carrental.com</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-clock text-primary me-3"></i>
-                            <div>
-                                <div class="fw-semibold">Available</div>
-                                <small class="text-muted">24/7 Support</small>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
 
-        <!-- Similar Cars -->
-        <?php if (!empty($similar_cars)): ?>
+        <?php /*
+        if (!empty($similar_cars)): ?>
             <div class="row mt-5">
                 <div class="col-12">
                     <h4 class="mb-4">Similar Cars</h4>
@@ -378,30 +297,20 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                             $similar_features = json_decode($similar_car['features'], true) ?? [];
                             ?>
                             <div class="col-lg-3 col-md-6">
-                                <div class="card h-100 car-card">
+                                <div class="card h-100 car-card shadow-sm">
                                     <div class="car-image-container">
                                         <img src="<?= htmlspecialchars($similar_images[0] ?? 'https://via.placeholder.com/400x250') ?>" 
                                              class="card-img-top car-image" alt="<?= htmlspecialchars($similar_car['brand'] . ' ' . $similar_car['model']) ?>">
-                                        <div class="car-status">
-                                            <span class="badge bg-success">Available</span>
-                                        </div>
+                                        <div class="car-status"><span class="badge bg-success">Available</span></div>
                                     </div>
                                     <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title"><?= htmlspecialchars($similar_car['brand'] . ' ' . $similar_car['model']) ?></h5>
-                                        <p class="card-text text-muted small">
-                                            <?= htmlspecialchars($similar_car['year']) ?> • <?= htmlspecialchars($similar_car['fuel_type']) ?> • <?= htmlspecialchars($similar_car['transmission']) ?>
+                                        <h5 class="card-title small fw-bold"><?= htmlspecialchars($similar_car['brand'] . ' ' . $similar_car['model']) ?></h5>
+                                        <p class="card-text text-muted x-small mb-2">
+                                            <?= htmlspecialchars($similar_car['year']) ?> • <?= htmlspecialchars($similar_car['fuel_type']) ?>
                                         </p>
-                                        <div class="car-features mb-3">
-                                            <?php foreach (array_slice($similar_features, 0, 2) as $feature): ?>
-                                                <span class="badge bg-light text-dark me-1"><?= htmlspecialchars($feature) ?></span>
-                                            <?php endforeach; ?>
-                                        </div>
-                                        <div class="mt-auto">
+                                        <div class="mt-auto pt-2 border-top">
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <div class="car-price">
-                                                    <span class="h6 text-primary mb-0">Rs.<?= number_format($similar_car['daily_rate'], 2) ?></span>
-                                                    <small class="text-muted">/day</small>
-                                                </div>
+                                                <span class="fw-bold text-primary small">Rs.<?= number_format($similar_car['daily_rate'], 0) ?></span>
                                                 <a href="<?= base_url('car-details.php?id=' . $similar_car['id']) ?>" class="btn btn-outline-primary btn-sm">View</a>
                                             </div>
                                         </div>
@@ -412,28 +321,15 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
+        <?php endif; */ ?>
+
     </div>
 </main>
 
 <?php include '../public/footer.php'; ?>
 
-<script src="<?= asset_url('js/main.js') ?>"></script>
-
-
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
 <script>
-function changeMainImage(imageSrc, thumbnail) {
-    const mainImage = document.getElementById('mainImage');
-    const thumbnails = document.querySelectorAll('.car-thumbnail');
-    
-    // Update main image
-    mainImage.src = imageSrc;
-    
-    // Update active thumbnail
-    thumbnails.forEach(thumb => thumb.classList.remove('active'));
-    thumbnail.classList.add('active');
-}
-
 // Auto-dismiss alerts
 setTimeout(() => {
     const alerts = document.querySelectorAll('.alert');

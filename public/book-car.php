@@ -44,29 +44,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_notes = sanitize_input($_POST['user_notes'] ?? '');
     $csrf_token = $_POST['csrf_token'] ?? '';
     
-    // Verify CSRF token
+    // --- SERVER SIDE VALIDATION ---
+    $today = strtotime('today');
+    $p_time = strtotime($pickup_date);
+    $r_time = strtotime($return_date);
+
     if (!verify_csrf_token($csrf_token)) {
-        $error = 'Invalid request. Please try again.';
+        $error = 'Invalid security token. Please refresh the page.';
     } elseif (empty($pickup_date) || empty($return_date) || empty($pickup_location) || empty($return_location)) {
-        $error = 'Please fill in all required fields.';
-    } elseif (strtotime($pickup_date) < strtotime('today')) {
-        $error = 'Pickup date cannot be in the past.';
-    } elseif (strtotime($return_date) <= strtotime($pickup_date)) {
-        $error = 'Return date must be after pickup date.';
+        $error = 'Please fill in all required fields (Dates and Locations).';
+    } elseif ($p_time < $today) {
+        $error = 'The pickup date cannot be in the past.';
+    } elseif ($r_time <= $p_time) {
+        $error = 'The return date must be at least one day after the pickup date.';
     } else {
-        // Check if car is available for the selected dates
-        // A conflict exists if (Existing_Start <= Requested_End) AND (Existing_End >= Requested_Start)
+        // Double check availability (Exclude cancelled/rejected bookings)
         $conflict = db_fetch("
             SELECT COUNT(*) as count 
             FROM bookings 
             WHERE car_id = ? 
-            AND status != 'cancelled'
-            AND pickup_date <= ? 
-            AND return_date >= ?
+            AND status NOT IN ('cancelled', 'rejected')
+            AND (
+                (pickup_date <= ? AND return_date >= ?)
+            )
         ", [$car_id, $return_date, $pickup_date]);
 
         if ($conflict['count'] > 0) {
-            $error = 'Sorry, this car was just booked by someone else for those dates. Please try different dates or another car.';
+            $error = 'Sorry, this car has already been booked for the selected dates.';
         } else {
             // Calculate total amount
             $total_days = calculate_total_days($pickup_date, $return_date);
@@ -90,15 +94,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $booking_id = db_insert('bookings', $booking_data);
             
             if ($booking_id) {
-                set_flash_message('success', 'Booking request submitted successfully! You will be notified once it\'s approved.');
+                set_flash_message('success', 'Booking request submitted successfully! Check your status in "My Bookings".');
                 header('Location: ' . base_url('booking-details.php?id=' . $booking_id));
                 exit;
             } else {
-                $error = 'Failed to create booking. Please try again.';
+                $error = 'Failed to create booking due to a database error.';
             }
         }
     }
 }
+?>
 ?>
 <!DOCTYPE html>
 <html lang="en">

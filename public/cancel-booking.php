@@ -8,9 +8,8 @@ require_login();
 $page_title = 'Cancel Booking';
 $current_user = get_current_user_data();
 
-// Admin contact info (shown to users who try to cancel active bookings)
 $admin_contact = [
-    'phone' => '+1-800-123-4567',
+    'phone' => '+977-9812345678',
     'email' => 'support@carrental.com'
 ];
 
@@ -29,45 +28,39 @@ if (!$booking) {
     exit;
 }
 
-// Initialize
+// Check if a request already exists to prevent duplicates
+$existing_request = db_fetch("SELECT id FROM booking_cancellations WHERE booking_id = ? AND status = 'pending'", [$booking_id]);
+
 $error = '';
 $success = '';
-$is_requesting_admin = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cancel_reason = sanitize_input($_POST['cancel_reason'] ?? '');
 
-    if (empty($cancel_reason)) {
+    if ($existing_request) {
+        $error = 'You already have a pending cancellation request for this booking.';
+    } elseif (empty($cancel_reason)) {
         $error = 'Please provide a reason for cancellation.';
     } else {
-        if (in_array($booking['status'], ['pending', 'approved'])) {
-            // Immediate cancellation
-            db_update('bookings', ['status' => 'cancelled'], ['id' => $booking_id]);
-
-            // Insert cancellation record
-            db_insert('booking_cancellations', [
+        // We removed the immediate db_update logic here.
+        // Now, all statuses (pending, approved, active) go through the same request process.
+        if (in_array($booking['status'], ['pending', 'approved', 'active'])) {
+            
+            $inserted = db_insert('booking_cancellations', [
                 'booking_id' => $booking_id,
                 'user_id' => $current_user['id'],
                 'cancel_reason' => $cancel_reason,
-                'status' => 'approved', // auto-approved for pending/approved bookings
-                'requested_at' => date('Y-m-d H:i:s'),
-                'decided_at' => date('Y-m-d H:i:s')
-            ]);
-
-            $success = 'Booking has been cancelled successfully.';
-        } elseif ($booking['status'] === 'active') {
-            // Request admin approval
-            db_insert('booking_cancellations', [
-                'booking_id' => $booking_id,
-                'user_id' => $current_user['id'],
-                'cancel_reason' => $cancel_reason,
-                'status' => 'pending',
+                'status' => 'pending', // Always pending now
                 'requested_at' => date('Y-m-d H:i:s')
             ]);
 
-            $success = 'Your cancellation request has been sent to the admin. Please contact support if urgent.';
+            if ($inserted) {
+                $success = 'Your cancellation request has been submitted and is awaiting admin approval.';
+            } else {
+                $error = 'Something went wrong while submitting your request.';
+            }
         } else {
-            $error = 'This booking cannot be cancelled.';
+            $error = 'This booking is already ' . $booking['status'] . ' and cannot be cancelled.';
         }
     }
 }
@@ -87,71 +80,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <main class="py-4">
     <div class="container">
-
         <div class="row justify-content-center">
             <div class="col-lg-6">
-
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h5 class="mb-0">Cancel Booking #<?= $booking['id'] ?></h5>
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-danger"><i class="bi bi-x-octagon me-2"></i>Cancel Booking #<?= $booking['id'] ?></h5>
                     </div>
                     <div class="card-body">
 
                         <?php if ($error): ?>
-                            <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+                            <div class="alert alert-danger border-0 shadow-sm small"><?= $error ?></div>
                         <?php endif; ?>
 
                         <?php if ($success): ?>
-                            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
-                        <?php endif; ?>
-
-                        <?php if (!$success): ?>
-                            <?php if (in_array($booking['status'], ['pending', 'approved', 'active'])): ?>
-                                <?php if ($booking['status'] === 'active'): ?>
-                                    <div class="alert alert-warning">
-                                        This booking is currently <strong>active</strong>. Cancellation requires admin approval.<br>
-                                        Please contact admin: <br>
-                                        Phone: <?= htmlspecialchars($admin_contact['phone']) ?><br>
-                                        Email: <?= htmlspecialchars($admin_contact['email']) ?>
-                                    </div>
-                                <?php endif; ?>
-
-                                <form method="POST">
-                                    <div class="mb-3">
-                                        <label for="cancel_reason" class="form-label">Reason for Cancellation *</label>
-                                        <textarea class="form-control" id="cancel_reason" name="cancel_reason" rows="4" required><?= htmlspecialchars($_POST['cancel_reason'] ?? '') ?></textarea>
-                                    </div>
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="bi bi-x-circle me-2"></i>Submit Cancellation
-                                        </button>
-                                        <a href="<?= base_url('booking-details.php?id=' . $booking['id']) ?>" class="btn btn-outline-secondary">
-                                            Back to Booking Details
-                                        </a>
-                                    </div>
-                                </form>
-                            <?php else: ?>
-                                <div class="alert alert-info">
-                                    This booking cannot be cancelled (status: <?= htmlspecialchars($booking['status']) ?>).
-                                </div>
-                                <a href="<?= base_url('booking-details.php?id=' . $booking['id']) ?>" class="btn btn-outline-secondary">
-                                    Back to Booking Details
-                                </a>
-                            <?php endif; ?>
+                            <div class="alert alert-success border-0 shadow-sm small">
+                                <i class="bi bi-check-circle-fill me-2"></i><?= $success ?>
+                            </div>
+                            <div class="d-grid">
+                                <a href="<?= base_url('my-booking.php') ?>" class="btn btn-primary">Back to My Bookings</a>
+                            </div>
                         <?php else: ?>
-                            <a href="<?= base_url('my-booking.php') ?>" class="btn btn-primary mt-3">
-                                Back to My Bookings
-                            </a>
+                            
+                            <div class="alert alert-info border-0 small">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                All cancellation requests are reviewed by our team. You will be notified once the request is processed.
+                            </div>
+
+                            <form method="POST">
+                                <div class="mb-3">
+                                    <label for="cancel_reason" class="form-label fw-bold">Reason for Cancellation *</label>
+                                    <textarea class="form-control" id="cancel_reason" name="cancel_reason" rows="4" placeholder="Please tell us why you want to cancel..." required><?= htmlspecialchars($_POST['cancel_reason'] ?? '') ?></textarea>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-danger py-2">
+                                        Submit Cancellation Request
+                                    </button>
+                                    <a href="<?= base_url('booking-details.php?id=' . $booking['id']) ?>" class="btn btn-light text-muted">
+                                        Nevermind, keep my booking
+                                    </a>
+                                </div>
+                            </form>
                         <?php endif; ?>
 
                     </div>
                 </div>
-
             </div>
         </div>
-
     </div>
 </main>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

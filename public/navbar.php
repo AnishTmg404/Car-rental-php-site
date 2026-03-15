@@ -38,7 +38,7 @@ require_once __DIR__ . '/url.php';
                                 <li><a class="dropdown-item" href="<?= base_url('admin/manage-users.php') ?>"><i class="bi bi-people-fill me-2"></i>Manage Users</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url('admin/manage-cars.php') ?>"><i class="bi bi-car-front-fill me-2"></i>Manage Cars</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url('admin/add-car.php') ?>"><i class="bi bi-plus-circle me-2"></i>Add Car</a></li>
-                                <li><a class="dropdown-item" href="<?= base_url('admin/report.php') ?>"><i class="bi bi-graph-up me-2"></i>Reports</a></li>
+                                <li><a class="dropdown-item" href="<?= base_url('admin/reports.php') ?>"><i class="bi bi-graph-up me-2"></i>Reports</a></li>
                             <?php else: ?>
                                 <li><a class="dropdown-item" href="<?= base_url('profile.php') ?>"><i class="bi bi-person me-2"></i>Profile</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url('my-booking.php') ?>"><i class="bi bi-calendar-check me-2"></i>My Bookings</a></li>

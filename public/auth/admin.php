@@ -29,19 +29,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter a valid email address.';
     } else {
         // Check user credentials
-        $user = db_fetch("SELECT * FROM users WHERE email = ? AND status = 'active'", [$email]);
-        
+        $user = db_fetch("SELECT * FROM users WHERE email = ?", [$email]);
+
         if ($user && verify_password($password, $user['password_hash'])) {
-            login_user($user);
-            set_flash_message('success', 'Welcome back, ' . $user['first_name'] . '!');
             
-            // Redirect based on role
-            if ($user['role'] === 'admin') {
+            // 1. Check Role First
+            if ($user['role'] !== 'admin') {
+                $error = 'Access denied. You do not have administrator privileges.';
+            } 
+            // 2. Check Status
+            elseif ($user['status'] !== 'active') {
+                $error = 'This admin account is currently ' . $user['status'] . '.';
+            } 
+            // 3. All good
+            else {
+                login_user($user);
+                set_flash_message('success', 'Welcome back, ' . $user['first_name'] . '!');
                 header('Location: ' . base_url('admin/dashboard.php'));
-            } else {
-                header('Location: ' . base_url('dashboard.php'));
+                exit;
             }
-            exit;
         } else {
             $error = 'Invalid email or password.';
         }

@@ -26,6 +26,31 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
+// Handle Status Toggle (Active/Inactive/Suspended)
+if (isset($_GET['toggle_id'])) {
+    $toggle_id = intval($_GET['toggle_id']);
+    
+    if ($toggle_id === $current_user['id']) {
+        $error = "You cannot change your own admin account status!";
+    } else {
+        // Fetch current status
+        $user_to_toggle = db_fetch("SELECT status FROM users WHERE id = ?", [$toggle_id]);
+        
+        if ($user_to_toggle) {
+            // Logic: If active -> set inactive. If anything else -> set active.
+            $new_status = ($user_to_toggle['status'] === 'active') ? 'inactive' : 'active';
+            
+            $updated = db_update('users', ['status' => $new_status], ['id' => $toggle_id]);
+            
+            if ($updated) {
+                $success = "User status updated to " . ucfirst($new_status) . "!";
+            } else {
+                $error = "Failed to update user status.";
+            }
+        }
+    }
+}
+
 // Get all users
 $users = db_fetch_all("SELECT * FROM users ORDER BY created_at DESC");
 ?>
@@ -106,19 +131,39 @@ $users = db_fetch_all("SELECT * FROM users ORDER BY created_at DESC");
                                     <td><?= $user['created_at'] ?></td>
                                     <td><?= $user['updated_at'] ?? '-' ?></td>
                                     <td>
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <a href="<?= base_url('admin/edit-user.php?id=' . $user['id']) ?>" class="btn btn-outline-primary">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <?php if ($user['id'] !== $current_user['id']): ?>
-                                                <a href="<?= base_url('admin/manage-users.php?delete_id=' . $user['id']) ?>" 
-                                                   class="btn btn-outline-danger"
-                                                   onclick="return confirm('Are you sure you want to delete this user?');">
-                                                    <i class="bi bi-trash"></i>
-                                                </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
+                    <?php
+                    $status = $user['status'] ?? 'active';
+                    $badge_class = 'bg-success'; // Default active
+                    if ($status === 'inactive') $badge_class = 'bg-secondary';
+                    if ($status === 'suspended') $badge_class = 'bg-danger';
+                    ?>
+                    <span class="badge <?= $badge_class ?>">
+                        <?= ucfirst($status) ?>
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <a href="<?= base_url('admin/edit-user.php?id=' . $user['id']) ?>" class="btn btn-outline-primary" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <?php if ($user['id'] !== $current_user['id']): ?>
+                            <?php if ($status === 'active'): ?>
+                                <a href="?toggle_id=<?= $user['id'] ?>" class="btn btn-outline-secondary" title="Deactivate" onclick="return confirm('Deactivate this user?');">
+                                    <i class="bi bi-pause-fill"></i>
+                                </a>
+                            <?php else: ?>
+                                <a href="?toggle_id=<?= $user['id'] ?>" class="btn btn-outline-success" title="Activate" onclick="return confirm('Activate this user?');">
+                                    <i class="bi bi-play-fill"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <button class="btn btn-outline-danger" title="Suspend" onclick="suspendUser(<?= $user['id'] ?>)">
+                                <i class="bi bi-slash-circle"></i>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </td>
                                 </tr>
                             <?php endforeach; ?>
                             <?php if (empty($users)): ?>

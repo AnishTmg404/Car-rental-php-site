@@ -85,4 +85,10 @@ function db_delete($table, $where, $params = []) {
     $stmt = db_query($sql, $params);
     return $stmt ? $stmt->rowCount() : false;
 }
+
+function db_execute($sql, $params = []) {
+    $stmt = db_query($sql, $params);
+    // Returns true if the query ran, false otherwise
+    return $stmt ? true : false;
+}
 ?>
