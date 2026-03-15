@@ -155,9 +155,32 @@ $average_rating = db_fetch("SELECT AVG(rating) as avg_rating, COUNT(*) as total_
                                 
                                 <div class="car-features mb-4">
                                     <h6 class="mb-2">Features:</h6>
-                                    <?php foreach ($car_features as $feature): ?>
-                                        <span class="badge bg-light text-dark me-2 mb-2"><?= htmlspecialchars($feature) ?></span>
-                                    <?php endforeach; ?>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <?php 
+                                        // 1. Decode the JSON
+                                        $features_data = json_decode($car['features'], true);
+
+                                        // 2. Normalize the data
+                                        $final_list = [];
+                                        if (is_array($features_data)) {
+                                            foreach ($features_data as $item) {
+                                                // If the item itself contains a comma, split it (fixes your current DB issue)
+                                                if (strpos($item, ',') !== false) {
+                                                    $split_items = explode(',', $item);
+                                                    foreach ($split_items as $s) $final_list[] = trim($s);
+                                                } else {
+                                                    $final_list[] = trim($item);
+                                                }
+                                            }
+                                        }
+
+                                        // 3. Render the pills
+                                        foreach (array_unique($final_list) as $feature): 
+                                            if (empty($feature)) continue;
+                                        ?>
+                                            <span class="feature-pill"><?= htmlspecialchars($feature) ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">

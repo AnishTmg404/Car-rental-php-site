@@ -55,7 +55,19 @@ $recent_bookings = db_fetch_all("
 ");
 
 // Car status overview
+// --- Fetching Car Status Counts ---
 $car_status_counts = db_fetch_all("SELECT status, COUNT(*) as count FROM cars GROUP BY status");
+
+// Helper function to pick colors for the badges
+function getStatusColor($status) {
+    return match($status) {
+        'available'   => 'success',
+        'rented'      => 'primary',
+        'maintenance' => 'warning text-dark',
+        'unavailable' => 'danger',
+        default       => 'secondary'
+    };
+}
 
 // Pending cancellation requests
 $pending_cancels = db_fetch("SELECT COUNT(*) as count FROM booking_cancellations WHERE status='pending'")['count'] ?? 0;
@@ -208,43 +220,57 @@ $pending_cancels = db_fetch("SELECT COUNT(*) as count FROM booking_cancellations
                         </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($recent_bookings as $booking): 
-                            $car_images = json_decode($booking['images'], true) ?? [];
-                            $car_image = $car_images[0] ?? 'https://via.placeholder.com/60x40';
-                        ?>
-                            <tr>
-                                <td class="d-flex align-items-center">
-                                    <img src="<?= htmlspecialchars($car_image) ?>" alt="Car" class="table-img me-2">
-                                    <?= htmlspecialchars($booking['brand'].' '.$booking['model']) ?>
-                                </td>
-                                <td>
-                                    <div class="fw-semibold"><?= htmlspecialchars($booking['first_name'].' '.$booking['last_name']) ?></div>
-                                    <small class="text-muted"><?= htmlspecialchars($booking['email']) ?></small>
-                                </td>
-                                <td>
-                                    <div class="small"><?= format_date($booking['pickup_date']) ?> → <?= format_date($booking['return_date']) ?></div>
-                                </td>
-                                <td class="fw-semibold">Rs.<?= number_format($booking['total_amount'],2) ?></td>
-                                <td>
-                                    <span class="badge bg-<?= match($booking['status']) {
-                                        'pending'=>'warning',
-                                        'approved'=>'success',
-                                        'rejected'=>'danger',
-                                        'active'=>'primary',
-                                        'completed'=>'secondary',
-                                        'cancelled'=>'dark',
-                                        default=>'secondary'
-                                    } ?>"><?= ucfirst($booking['status']) ?></span>
-                                </td>
-                                <td>
+                            <?php foreach ($recent_bookings as $booking): 
+                                // 1. Decode the JSON string
+                                $car_images = json_decode($booking['images'], true);
+                                
+                                // 2. Get the first image path/URL
+                                $raw_path = (is_array($car_images) && !empty($car_images[0])) ? $car_images[0] : '';
+
+                                if (!empty($raw_path)) {
+                                    // 3. Check if it's an external URL or local path
+                                    if (filter_var($raw_path, FILTER_VALIDATE_URL)) {
+                                        $car_image = $raw_path;
+                                    } else {
+                                        $car_image = base_url($raw_path);
+                                    }
+                                } else {
+                                    // 4. THE FIX: Use a professional car thumbnail from the web instead of a placeholder
+                                    $car_image = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=200&h=150&fit=crop";
+                                }
+                            ?>
+                                <tr>
+                                    <td class="align-middle">
+                                        <div class="d-flex align-items-center" style="gap: 12px;">
+                                            <img src="<?= htmlspecialchars($car_image) ?>" alt="Car" class="table-img" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px; flex-shrink: 0;">
+                                            <span class="text-nowrap"><?= htmlspecialchars($booking['brand'].' '.$booking['model']) ?></span>
+                                        </div>
+                                    </td>
                                     <td>
+                                        <div class="fw-semibold"><?= htmlspecialchars($booking['first_name'].' '.$booking['last_name']) ?></div>
+                                        <small class="text-muted"><?= htmlspecialchars($booking['email']) ?></small>
+                                    </td>
+                                    <td>
+                                        <div class="small"><?= format_date($booking['pickup_date']) ?> → <?= format_date($booking['return_date']) ?></div>
+                                    </td>
+                                    <td class="fw-semibold">Rs.<?= number_format($booking['total_amount'],2) ?></td>
+                                    <td>
+                                        <span class="badge bg-<?= match($booking['status']) {
+                                            'pending'=>'warning',
+                                            'approved'=>'success',
+                                            'rejected'=>'danger',
+                                            'active'=>'primary',
+                                            'completed'=>'secondary',
+                                            'cancelled'=>'dark',
+                                            default=>'secondary'
+                                        } ?>"><?= ucfirst($booking['status']) ?></span>
+                                    </td>
+                                    <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <!-- View details button -->
                                             <a href="<?= base_url('users/booking-details.php?id=' . $booking['id']) ?>" class="btn btn-outline-primary">
                                                 <i class="bi bi-eye"></i>
                                             </a>
 
-                                            <!-- Approve/Reject buttons for pending bookings -->
                                             <?php if ($booking['status'] === 'pending'): ?>
                                                 <a href="<?= base_url('admin/approve-booking.php?id=' . $booking['id']) ?>" class="btn btn-outline-success">
                                                     <i class="bi bi-check"></i>
@@ -255,10 +281,9 @@ $pending_cancels = db_fetch("SELECT COUNT(*) as count FROM booking_cancellations
                                             <?php endif; ?>
                                         </div>
                                     </td>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -297,11 +322,20 @@ $pending_cancels = db_fetch("SELECT COUNT(*) as count FROM booking_cancellations
 <!-- Car status overview -->
 <div class="row g-4 mt-4">
     <div class="col-xl-12">
-        <div class="card">
-            <div class="card-header"><h5 class="card-title mb-0">Car Status Overview</h5></div>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0 fw-bold">Car Status Overview</h5>
+            </div>
             <div class="card-body d-flex flex-wrap gap-3">
+                <?php 
+                $total = array_sum(array_column($car_status_counts, 'count')); 
+                ?>
+                <div class="badge bg-dark fs-6 p-3">Total Fleet: <?= $total ?></div>
+
                 <?php foreach ($car_status_counts as $status): ?>
-                    <div class="badge bg-primary fs-6 p-3"><?= ucfirst($status['status']) ?>: <?= $status['count'] ?></div>
+                    <div class="badge bg-<?= getStatusColor($status['status']) ?> fs-6 p-3">
+                        <?= ucfirst($status['status']) ?>: <?= $status['count'] ?>
+                    </div>
                 <?php endforeach; ?>
             </div>
         </div>

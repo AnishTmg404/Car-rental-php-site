@@ -55,20 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Return date must be after pickup date.';
     } else {
         // Check if car is available for the selected dates
-        $conflicting_bookings = db_fetch("
+        // A conflict exists if (Existing_Start <= Requested_End) AND (Existing_End >= Requested_Start)
+        $conflict = db_fetch("
             SELECT COUNT(*) as count 
             FROM bookings 
             WHERE car_id = ? 
-            AND status IN ('pending', 'approved', 'active') 
-            AND (
-                (pickup_date <= ? AND return_date >= ?) OR
-                (pickup_date <= ? AND return_date >= ?) OR
-                (pickup_date >= ? AND return_date <= ?)
-            )
-        ", [$car_id, $pickup_date, $pickup_date, $return_date, $return_date, $pickup_date, $return_date]);
-        
-        if ($conflicting_bookings['count'] > 0) {
-            $error = 'Car is not available for the selected dates. Please choose different dates.';
+            AND status != 'cancelled'
+            AND pickup_date <= ? 
+            AND return_date >= ?
+        ", [$car_id, $return_date, $pickup_date]);
+
+        if ($conflict['count'] > 0) {
+            $error = 'Sorry, this car was just booked by someone else for those dates. Please try different dates or another car.';
         } else {
             // Calculate total amount
             $total_days = calculate_total_days($pickup_date, $return_date);
@@ -264,7 +262,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                                 <div class="price-total">
                                     <span>Total:</span>
-                                    <span id="total">$0.00</span>
+                                    <span id="total">Rs 0.00</span>
                                 </div>
                             </div>
 
@@ -313,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!pickupVal || !returnVal) {
             durationSpan.textContent = 'Select dates';
-            totalSpan.textContent = '$0.00';
+            totalSpan.textContent = 'Rs 0.00';
             return;
         }
 
@@ -333,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Calculate total (no tax, no subtotal)
         const total = diffDays * dailyRate;
-        totalSpan.textContent = '$' + total.toFixed(2);
+        totalSpan.textContent = 'Rs.' + total.toLocaleString(undefined, {minimumFractionDigits: 2});
     }
 
     pickupDateInput.addEventListener('change', function() {

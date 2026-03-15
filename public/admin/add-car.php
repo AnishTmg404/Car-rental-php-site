@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'category' => $category,
             'daily_rate' => $daily_rate,
             'description' => $description,
-            'features' => json_encode($features),
+            'features' => json_encode(array_map('trim', $features)),
             'images' => json_encode($uploaded_images),
             'status' => 'available',
             'created_at' => date('Y-m-d H:i:s')

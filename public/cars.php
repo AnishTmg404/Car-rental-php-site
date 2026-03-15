@@ -15,18 +15,31 @@ $return_date = $_GET['return_date'] ?? '';
 $category_filter = $_GET['category'] ?? '';
 $price_min = $_GET['price_min'] ?? '';
 $price_max = $_GET['price_max'] ?? '';
-$fuel_type = $_GET['fuel_type'] ?? '';
+$fuel_type = $_GET['fuel_type'] ?? '';  
 $transmission = $_GET['transmission'] ?? '';
 
 // Build query conditions
 $where_conditions = ["status = 'available'"];
 $params = [];
 
+// NEW: Filter by Date Availability
+if ($pickup_date && $return_date) {
+    // Exclude cars that have an overlapping booking that is NOT cancelled
+    $where_conditions[] = "id NOT IN (
+        SELECT car_id FROM bookings 
+        WHERE status != 'cancelled' 
+        AND NOT (pickup_date > ? OR return_date < ?)
+    )";
+    $params[] = $return_date; // Check if existing pickup is before search return
+    $params[] = $pickup_date; // Check if existing return is after search pickup
+}
+
 if ($search) {
     $where_conditions[] = "(brand LIKE ? OR model LIKE ? OR description LIKE ?)";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
+    $search_param = "%$search%";
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
 }
 
 if ($category_filter) {
@@ -61,8 +74,11 @@ $page = max(1, intval($_GET['page'] ?? 1));
 $limit = 12;
 $offset = ($page - 1) * $limit;
 
-$cars = db_fetch_all("SELECT * FROM cars WHERE $where_clause ORDER BY created_at DESC LIMIT $limit OFFSET $offset", $params);
-$total_cars = db_fetch("SELECT COUNT(*) as count FROM cars WHERE $where_clause", $params)['count'];
+// Combine parameters for the final queries
+$query_params = $params;
+
+$cars = db_fetch_all("SELECT * FROM cars WHERE $where_clause ORDER BY created_at DESC LIMIT $limit OFFSET $offset", $query_params);
+$total_cars = db_fetch("SELECT COUNT(*) as count FROM cars WHERE $where_clause", $query_params)['count'];
 $total_pages = ceil($total_cars / $limit);
 
 // Get filter options
@@ -72,6 +88,42 @@ $transmissions = db_fetch_all("SELECT DISTINCT transmission FROM cars WHERE stat
 
 // Get price range
 $price_range = db_fetch("SELECT MIN(daily_rate) as min_price, MAX(daily_rate) as max_price FROM cars WHERE status = 'available'");
+$error_message = '';
+
+// 1. Check for Price Conflict
+if (!empty($price_min) && !empty($price_max)) {
+    if ((float)$price_min > (float)$price_max) {
+        $error_message = "Minimum price cannot be higher than maximum price.";
+    }
+}
+
+// 2. Check for Date Conflicts
+if ($pickup_date && $return_date) {
+    $today = date('Y-m-d');
+    if ($pickup_date < $today) {
+        $error_message = "Pickup date cannot be in the past.";
+    } elseif ($return_date <= $pickup_date) {
+        $error_message = "Return date must be at least one day after the pickup date.";
+    }
+}
+
+// --- ONLY RUN QUERY IF NO ERRORS ---
+if (empty($error_message)) {
+    $page = max(1, intval($_GET['page'] ?? 1));
+    $limit = 12;
+    $offset = ($page - 1) * $limit;
+
+    $query_params = $params;
+
+    $cars = db_fetch_all("SELECT * FROM cars WHERE $where_clause ORDER BY created_at DESC LIMIT $limit OFFSET $offset", $query_params);
+    $total_cars = db_fetch("SELECT COUNT(*) as count FROM cars WHERE $where_clause", $query_params)['count'];
+    $total_pages = ceil($total_cars / $limit);
+} else {
+    // If there is an error, show 0 results
+    $cars = [];
+    $total_cars = 0;
+    $total_pages = 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -101,6 +153,13 @@ $price_range = db_fetch("SELECT MIN(daily_rate) as min_price, MAX(daily_rate) as
                 </div>
             </div>
         </div>
+
+        <?php if ($error_message): ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i><?= $error_message ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
 
         <!-- Search and Filters -->
         <div class="card mb-4">
@@ -330,20 +389,21 @@ document.addEventListener('DOMContentLoaded', function() {
 function setViewMode(mode) {
     const grid = document.getElementById('carsGrid');
     const buttons = document.querySelectorAll('.btn-group .btn');
+    const items = grid.querySelectorAll('.car-item');
     
     buttons.forEach(btn => btn.classList.remove('active'));
     
     if (mode === 'grid') {
-        grid.className = 'row g-4';
+        grid.classList.replace('g-3', 'g-4');
         buttons[0].classList.add('active');
+        items.forEach(item => {
+            item.className = 'col-lg-4 col-md-6 car-item'; // Restore grid sizing
+        });
     } else {
-        grid.className = 'row g-3';
+        grid.classList.replace('g-4', 'g-3');
         buttons[1].classList.add('active');
-        
-        // Convert cards to list view
-        const cards = grid.querySelectorAll('.car-item');
-        cards.forEach(card => {
-            card.className = 'col-12 car-item';
+        items.forEach(item => {
+            item.className = 'col-12 car-item'; // Full width for list
         });
     }
 }
@@ -352,19 +412,6 @@ function setViewMode(mode) {
 const priceMin = document.getElementById('price_min');
 const priceMax = document.getElementById('price_max');
 
-if (priceMin && priceMax) {
-    priceMin.addEventListener('input', function() {
-        if (parseFloat(this.value) > parseFloat(priceMax.value)) {
-            priceMax.value = this.value;
-        }
-    });
-    
-    priceMax.addEventListener('input', function() {
-        if (parseFloat(this.value) < parseFloat(priceMin.value)) {
-            priceMin.value = this.value;
-        }
-    });
-}
 </script>
 
 </body>
