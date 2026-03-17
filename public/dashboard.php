@@ -256,7 +256,7 @@ $favorite_cars = db_fetch_all("
                 </div>
 
                 <!-- Favorite Cars -->
-                <?php if (!empty($favorite_cars)): ?>
+                <!-- <?php if (!empty($favorite_cars)): ?>
                     <div class="card">
                         <div class="card-header">
                             <h6 class="card-title mb-0">Your Favorite Cars</h6>
@@ -281,7 +281,7 @@ $favorite_cars = db_fetch_all("
                             <?php endforeach; ?>
                         </div>
                     </div>
-                <?php endif; ?>
+                <?php endif; ?> -->
 
                 <!-- Account Info -->
                 <div class="card mt-4">

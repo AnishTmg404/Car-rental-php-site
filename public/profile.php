@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // 3. Uniqueness Check (Username/Email)
         if (!$error) {
-            $existing = db_select_one("SELECT id FROM users WHERE (email = ? OR username = ?) AND id != ?", [$email, $username, $current_user['id']]);
+            $existing = db_fetch("SELECT id FROM users WHERE (email = ? OR username = ?) AND id != ?", [$email, $username, $current_user['id']]);
             if ($existing) {
                 $error = 'Username or Email is already taken by another user.';
             }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // 4. Password Change Validation
             if (!empty($new_password)) {
-                $row = db_select_one("SELECT password FROM users WHERE id = ?", [$current_user['id']]);
+                $row = db_fetch("SELECT password FROM users WHERE id = ?", [$current_user['id']]);
                 if (empty($current_password)) {
                     $error = 'Please enter your current password to authorize changes.';
                 } elseif (!password_verify($current_password, $row['password'])) {
