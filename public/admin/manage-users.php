@@ -158,9 +158,9 @@ $users = db_fetch_all("SELECT * FROM users ORDER BY created_at DESC");
                                 </a>
                             <?php endif; ?>
 
-                            <button class="btn btn-outline-danger" title="Suspend" onclick="suspendUser(<?= $user['id'] ?>)">
+                            <!-- <button class="btn btn-outline-danger" title="Suspend" onclick="suspendUser(<?= $user['id'] ?>)">
                                 <i class="bi bi-slash-circle"></i>
-                            </button>
+                            </button> -->
                         <?php endif; ?>
                     </div>
                 </td>

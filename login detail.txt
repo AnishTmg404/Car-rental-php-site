@@ -1,6 +1,7 @@
-admin@carrental.com   =  password
-user@carrental.com   = password123
-ajaymoktan@gmail.com = 12345678
+admin@carrental.com   =  123456789
+ajayamoktan@gmail.com = 123456789
+anishtamang@gmail.com = 123456789
+
 
 
 
