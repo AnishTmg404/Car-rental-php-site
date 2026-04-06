@@ -1,5 +1,8 @@
 # Car Rental System
 
+**Project of 4th semester BCA**
+**Created by Anish Tamang and Ajaya Moktan**
+
 A comprehensive full-stack car rental web application built with PHP, MySQL, JavaScript, HTML, CSS, and Bootstrap. This system provides a complete solution for managing car rentals with user authentication, admin dashboard, booking management, and responsive design.
 
 ## Features
